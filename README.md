@@ -30,7 +30,7 @@ The dashboard works without Supabase and continues to use browser storage. To te
 
 Keep `.env.local` private. Only the public URL and publishable key belong in these `NEXT_PUBLIC_` variables; never put a service-role or secret key in browser-visible configuration. The optional account sync currently stores plant profiles and the latest sensor snapshot; automation settings/events and alerts remain in browser storage.
 
-The Supabase migration has not yet been applied in this checkout: local database startup requires Docker. No hosted Supabase project or live database has been changed.
+The checked-in migration has been applied and verified against the local Supabase stack in this development environment. No hosted Supabase project or live database has been changed.
 
 ## Checks
 

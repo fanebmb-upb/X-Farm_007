@@ -69,13 +69,14 @@ docs/                   Architecture, delivery plan, design reference
 - [x] Add browser-storage loading, unavailable-storage error, and empty-plant/event states for the local prototype.
 - [x] Cover create → simulate → alert → irrigate → inspect event history in an integrated workflow test.
 
-### P3 — Database and authentication (foundation implemented; local DB verification pending)
+### P3 — Database and authentication (local verification complete; hosted setup pending)
 
 - [x] Add optional Supabase email sign-in/sign-up routes and cookie-backed session handling.
 - [x] Define a first farm/zone/plant/sensor/reading/automation/alert schema with explicit grants and row-level ownership policies.
 - [x] Add an authenticated endpoint for user-triggered plant-profile and current-reading snapshot save/load.
 - [x] Keep the mock-data dashboard usable when Supabase credentials are absent.
-- [ ] Start Supabase locally and apply/verify the migration (Docker is not available in this environment).
+- [x] Start Supabase locally, apply the migration, and lint the schema with no errors.
+- [x] Verify local sign-up/sign-in, API authentication, snapshot save/load/retry, malformed-input rejection, and cross-user RLS isolation.
 - [ ] Configure a hosted Supabase project and verify authentication/data access only after the project owner supplies/configures it; no live resources have been changed.
 
 ### P4 — Future integrations
