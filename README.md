@@ -32,6 +32,8 @@ Keep `.env.local` private. Only the public URL and publishable key belong in the
 
 The checked-in migration has been applied and verified against the local Supabase stack in this development environment. No hosted Supabase project or live database has been changed.
 
+The Weather section uses Open-Meteo's no-key API for evaluation, with attribution in the interface. Its free API is limited to non-commercial use; a commercial product must use an appropriately licensed endpoint. Weather forecasts remain advisory and never change simulated sensor values or trigger automation.
+
 ## Checks
 
 ```sh
