@@ -178,6 +178,7 @@ export const navigationItems = [
   { id: "automation", label: "Automation", icon: "settings" },
   { id: "weather", label: "Weather", icon: "cloud" },
   { id: "settings", label: "Settings", icon: "sliders" },
+  { id: "how-it-works", label: "How it works", icon: "sprout" },
 ] as const;
 
 export type NavigationId = (typeof navigationItems)[number]["id"];

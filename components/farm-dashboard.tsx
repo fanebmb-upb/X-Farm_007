@@ -10,6 +10,7 @@ import { AuthControl } from "@/components/auth-control";
 import { AccountSyncControl } from "@/components/account-sync-control";
 import { WeatherView } from "@/components/weather-view";
 import { AssistantView } from "@/components/assistant-view";
+import { HowItWorksView } from "@/components/how-it-works-view";
 import { navigationItems, sensorDefinitions, SIMULATION_STORAGE_KEY, type AutomationRules, type AutomationState, type FarmAlert, type FarmEvent, type NavigationId, type Plant, type PlantDraft, type SensorReading, type SimulationState } from "@/lib/mock-data";
 import { advanceSimulation, createInitialSimulationState, getAlerts, getPeriodSamples, getPlantHealth, irrigateSimulation, parseSimulationState, savePlantProfile, serializeSimulationState, setActuatorOverride, updateAutomationRules, validateAutomationRules } from "@/lib/simulation";
 
@@ -26,6 +27,7 @@ const sectionDescriptions: Record<NavigationId, string> = {
   automation: "Configure virtual rules, review controls, and inspect estimated resource use.",
   weather: "Review local weather forecasts and potential growing risks.",
   settings: "Control the virtual clock and local simulation data.",
+  "how-it-works": "A plain-language guide to the X_Farm simulation, its data, and how to use it.",
 };
 
 function formatTimestamp(timestamp: string, options: Intl.DateTimeFormatOptions = { hour: "2-digit", minute: "2-digit", hour12: false }) {
@@ -200,6 +202,8 @@ export function FarmDashboard() {
             <WeatherView />
           ) : activeSection === "assistant" ? (
             <AssistantView plants={simulation.plants} readings={simulation.readings} alerts={alerts} events={simulation.events} />
+          ) : activeSection === "how-it-works" ? (
+            <HowItWorksView />
           ) : (
             <section className="coming-soon-panel" aria-live="polite"><div className="coming-icon"><Icon name="sparkles" size={26} /></div><h2>Section unavailable</h2><p>This section is not available yet.</p><button className="text-button" onClick={() => selectSection("dashboard")}>Return to dashboard <Icon name="chevron" size={15} /></button></section>
           )}
