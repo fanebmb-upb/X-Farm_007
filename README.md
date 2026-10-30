@@ -28,7 +28,7 @@ The dashboard works without Supabase and continues to use browser storage. To te
 3. Copy `.env.example` to `.env.local`, then set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` to the local API URL and publishable key shown by `supabase status`.
 4. Run `npm run dev` and open `/login`. Local email confirmation is disabled by the checked-in Supabase config.
 
-Keep `.env.local` private. Only the public URL and publishable key belong in these `NEXT_PUBLIC_` variables; never put a service-role or secret key in browser-visible configuration. The optional account sync currently stores plant profiles and the latest sensor snapshot; automation settings/events and alerts remain in browser storage.
+Keep `.env.local` private. Only the public URL and publishable key belong in these `NEXT_PUBLIC_` variables; never put a service-role or secret key in browser-visible configuration. The optional account sync stores plant profiles, the latest sensor snapshot, automation settings and rules, automation event history, and active alerts.
 
 The checked-in migration has been applied and verified against the local Supabase stack in this development environment. No hosted Supabase project or live database has been changed.
 

@@ -36,7 +36,7 @@ docs/                   Architecture, delivery plan, design reference
 | Alerts and actions | Target-derived environmental alerts, simulated irrigation, reservoir change, and timestamped event history |
 | Rule-based automation | Configurable irrigation, ventilation, and lighting thresholds; hourly rule evaluation; manual actuator overrides; resume automatic control |
 | Resource estimates | Simulated water and energy totals recorded with automation activity |
-| Persistence | Plant profiles, simulation clock, readings, and event history save locally; optional Supabase account sync stores plant profiles and current readings |
+| Persistence | Plant profiles, simulation clock, readings, events, automation settings, and alerts save locally; optional Supabase account sync stores plant profiles, current readings, automation settings, event history, and active alerts |
 | Authentication and data ownership | Optional Supabase Auth routes and a first migration with user-owned farms/zones, explicit grants, and row-level policies |
 | Integrations | Hardware, external AI, and weather services remain future work; no hosted Supabase project is configured |
 
@@ -73,7 +73,7 @@ docs/                   Architecture, delivery plan, design reference
 
 - [x] Add optional Supabase email sign-in/sign-up routes and cookie-backed session handling.
 - [x] Define a first farm/zone/plant/sensor/reading/automation/alert schema with explicit grants and row-level ownership policies.
-- [x] Add an authenticated endpoint for user-triggered plant-profile and current-reading snapshot save/load.
+- [x] Add an authenticated endpoint for user-triggered plant, reading, automation-rule/state, event, and active-alert snapshot save/load.
 - [x] Keep the mock-data dashboard usable when Supabase credentials are absent.
 - [x] Start Supabase locally, apply the migration, and lint the schema with no errors.
 - [x] Verify local sign-up/sign-in, API authentication, snapshot save/load/retry, malformed-input rejection, and cross-user RLS isolation.

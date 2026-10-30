@@ -375,7 +375,7 @@ export function parseSimulationState(raw: string | null): SimulationState | null
       history[sensorId] = series;
     }
     const automation = value.automation === undefined ? structuredClone(defaultAutomationState) : value.automation;
-    if (!isAutomationState(automation)) return null;
+    if (!isPersistableAutomationState(automation)) return null;
     return { version: 2, zoneId: ZONE_ID, currentTime: value.currentTime, plants: value.plants as Plant[], readings: value.readings as SensorReading[], history, events: value.events as FarmEvent[], automation };
   } catch {
     return null;
@@ -416,16 +416,21 @@ export function isPersistableReading(value: unknown): value is SensorReading {
 }
 
 function isEvent(value: unknown): value is FarmEvent {
-  return isRecord(value) && typeof value.id === "string" && isTimestamp(value.time) && typeof value.event === "string" && typeof value.detail === "string" && ["water", "light", "air", "growth"].includes(String(value.kind));
+  return isRecord(value)
+    && typeof value.id === "string" && value.id.length > 0 && value.id.length <= 120
+    && isTimestamp(value.time)
+    && typeof value.event === "string" && value.event.length > 0 && value.event.length <= 120
+    && typeof value.detail === "string" && value.detail.length <= 500
+    && ["water", "light", "air", "growth"].includes(String(value.kind));
 }
 
-function isAutomationState(value: unknown): value is SimulationState["automation"] {
+export function isPersistableAutomationState(value: unknown): value is SimulationState["automation"] {
   if (!isRecord(value) || !isRecord(value.rules) || !isRecord(value.actuators) || !isRecord(value.overrides) || !isRecord(value.resources)) return false;
   const { irrigation, ventilation, lighting } = value.rules;
   if (!isRecord(irrigation) || !isRecord(ventilation) || !isRecord(lighting)) return false;
-  if (typeof irrigation.enabled !== "boolean" || typeof irrigation.thresholdPercent !== "number" || irrigation.thresholdPercent < 5 || irrigation.thresholdPercent > 80) return false;
-  if (typeof ventilation.enabled !== "boolean" || typeof ventilation.maximumTemperatureC !== "number" || ventilation.maximumTemperatureC < 10 || ventilation.maximumTemperatureC > 45) return false;
-  if (typeof lighting.enabled !== "boolean" || typeof lighting.targetPpfd !== "number" || lighting.targetPpfd < 50 || lighting.targetPpfd > 1600) return false;
+  if (typeof irrigation.enabled !== "boolean" || typeof irrigation.thresholdPercent !== "number" || !Number.isFinite(irrigation.thresholdPercent) || irrigation.thresholdPercent < 5 || irrigation.thresholdPercent > 80) return false;
+  if (typeof ventilation.enabled !== "boolean" || typeof ventilation.maximumTemperatureC !== "number" || !Number.isFinite(ventilation.maximumTemperatureC) || ventilation.maximumTemperatureC < 10 || ventilation.maximumTemperatureC > 45) return false;
+  if (typeof lighting.enabled !== "boolean" || typeof lighting.targetPpfd !== "number" || !Number.isFinite(lighting.targetPpfd) || lighting.targetPpfd < 50 || lighting.targetPpfd > 1600) return false;
   if (typeof value.actuators.ventilation !== "boolean" || typeof value.actuators.growLights !== "boolean") return false;
   if (!(value.overrides.ventilation === null || typeof value.overrides.ventilation === "boolean") || !(value.overrides.growLights === null || typeof value.overrides.growLights === "boolean")) return false;
   return typeof value.resources.waterLiters === "number" && Number.isFinite(value.resources.waterLiters) && value.resources.waterLiters >= 0 && typeof value.resources.energyKwh === "number" && Number.isFinite(value.resources.energyKwh) && value.resources.energyKwh >= 0;

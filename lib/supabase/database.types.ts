@@ -37,20 +37,20 @@ export type Database = {
         { id?: number; zone_id: string; reading_key: string; sensor_id: string; plant_id?: string | null; value: number; recorded_at: string; created_at?: string }
       >;
       simulation_scenarios: Table<
-        { id: string; zone_id: string; name: string; configuration: Json; active: boolean } & Timestamped,
-        { id?: string; zone_id: string; name: string; configuration?: Json; active?: boolean; created_at?: string; updated_at?: string }
+        { id: string; zone_id: string; snapshot_key: string | null; name: string; configuration: Json; active: boolean } & Timestamped,
+        { id?: string; zone_id: string; snapshot_key?: string | null; name: string; configuration?: Json; active?: boolean; created_at?: string; updated_at?: string }
       >;
       automation_rules: Table<
         { id: string; zone_id: string; rule_type: string; enabled: boolean; threshold: number; unit: string; action_configuration: Json } & Timestamped,
         { id?: string; zone_id: string; rule_type: string; enabled?: boolean; threshold: number; unit: string; action_configuration?: Json; created_at?: string; updated_at?: string }
       >;
       automation_events: Table<
-        { id: string; zone_id: string; rule_id: string | null; action: string; source: string; outcome: Json; occurred_at: string; created_at: string },
-        { id?: string; zone_id: string; rule_id?: string | null; action: string; source: string; outcome?: Json; occurred_at?: string; created_at?: string }
+        { id: string; zone_id: string; client_event_id: string | null; rule_id: string | null; action: string; source: string; outcome: Json; occurred_at: string; created_at: string },
+        { id?: string; zone_id: string; client_event_id?: string | null; rule_id?: string | null; action: string; source: string; outcome?: Json; occurred_at?: string; created_at?: string }
       >;
       alerts: Table<
-        { id: string; zone_id: string; plant_id: string | null; title: string; detail: string; severity: string; status: string; raised_at: string; resolved_at: string | null; created_at: string },
-        { id?: string; zone_id: string; plant_id?: string | null; title: string; detail?: string; severity?: string; status?: string; raised_at?: string; resolved_at?: string | null; created_at?: string }
+        { id: string; zone_id: string; alert_key: string | null; plant_id: string | null; title: string; detail: string; severity: string; status: string; raised_at: string; resolved_at: string | null; created_at: string },
+        { id?: string; zone_id: string; alert_key?: string | null; plant_id?: string | null; title: string; detail?: string; severity?: string; status?: string; raised_at?: string; resolved_at?: string | null; created_at?: string }
       >;
     };
     Views: Record<string, never>;
