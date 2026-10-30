@@ -13,6 +13,7 @@ app/                    Next.js routes, root layout, global design tokens
 components/             Dashboard composition and reusable UI
   ui/                   Shared Button and Icon primitives
 lib/                    Domain types, mock data, simulation and persistence
+  sensors/              Normalized sensor adapter contract and virtual adapter
 tests/                  Deterministic simulation domain tests
 docs/                   Architecture, delivery plan, design reference
 ```
@@ -23,6 +24,7 @@ docs/                   Architecture, delivery plan, design reference
 - **History and persistence:** The prototype seeds 30 days of hourly mock readings and stores the current simulation scenario in browser local storage. The storage parser validates restored values. No account or server-side persistence is required.
 - **UI reuse:** Shared reading, plant-table, alert, event, profile-dialog, and chart components support a responsive dashboard and analytics view.
 - **Future services:** A later data adapter can map the current domain to farms, zones, plants, sensors, readings, scenarios, rules, events, alerts, and reports. Authentication and user ownership belong in the database phase; credentials for AI and other providers must remain server-side.
+- **Sensor adapters:** `SensorAdapter` exposes zone-scoped, timestamped observations in a normalized domain shape. `VirtualSensorAdapter` maps the existing simulation into it. Future hardware gateways can implement the same contract; no driver, physical-device transport, or credentials are part of this MVP.
 
 ## Requirements coverage
 
@@ -38,7 +40,7 @@ docs/                   Architecture, delivery plan, design reference
 | Resource estimates | Simulated water and energy totals recorded with automation activity |
 | Persistence | Plant profiles, simulation clock, readings, events, automation settings, and alerts save locally; optional Supabase account sync stores plant profiles, current readings, automation settings, event history, and active alerts |
 | Authentication and data ownership | Optional Supabase Auth routes and a first migration with user-owned farms/zones, explicit grants, and row-level policies |
-| Integrations | Weather forecasts use server-mediated Open-Meteo and GeoNames location search; the AI Assistant uses a server-side OpenAI Responses API route when configured; hardware integration remains future work; no hosted Supabase project is configured |
+| Integrations | Weather forecasts use server-mediated Open-Meteo and GeoNames location search; the AI Assistant uses a server-side OpenAI Responses API route when configured; normalized virtual/hardware sensor adapter boundary is defined with no physical driver; no hosted Supabase project is configured |
 
 ## Prioritized implementation plan
 
@@ -83,7 +85,7 @@ docs/                   Architecture, delivery plan, design reference
 
 - [x] Add server-mediated Open-Meteo geocoding and seven-day forecasts with forecast-derived risks clearly separated from simulated sensor readings and automation.
 - [x] Add a server-mediated OpenAI Responses API assistant with bounded farm context, explicit simulated-data and uncertainty instructions, and no automation access.
-- [ ] Define hardware adapter boundaries for later physical sensor integration.
+- [x] Define a validated sensor adapter contract and bridge the virtual simulator through it for later hardware integration.
 
 AI chat, live weather, satellite feeds, machine learning, physical sensors, and production database setup are not blockers for V0.1. No production deployment or live database resource has been changed.
 
