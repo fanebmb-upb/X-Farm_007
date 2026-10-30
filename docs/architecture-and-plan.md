@@ -36,8 +36,9 @@ docs/                   Architecture, delivery plan, design reference
 | Alerts and actions | Target-derived environmental alerts, simulated irrigation, reservoir change, and timestamped event history |
 | Rule-based automation | Configurable irrigation, ventilation, and lighting thresholds; hourly rule evaluation; manual actuator overrides; resume automatic control |
 | Resource estimates | Simulated water and energy totals recorded with automation activity |
-| Persistence | Plant profiles, simulation clock, readings, and event history saved locally in the browser |
-| Integrations | Hardware, external AI, weather services, authentication, and a live database remain future work |
+| Persistence | Plant profiles, simulation clock, readings, and event history save locally; optional Supabase account sync stores plant profiles and current readings |
+| Authentication and data ownership | Optional Supabase Auth routes and a first migration with user-owned farms/zones, explicit grants, and row-level policies |
+| Integrations | Hardware, external AI, and weather services remain future work; no hosted Supabase project is configured |
 
 ## Prioritized implementation plan
 
@@ -68,9 +69,17 @@ docs/                   Architecture, delivery plan, design reference
 - [x] Add browser-storage loading, unavailable-storage error, and empty-plant/event states for the local prototype.
 - [x] Cover create → simulate → alert → irrigate → inspect event history in an integrated workflow test.
 
-### P3 — Integrations after the simulation workflow is reliable
+### P3 — Database and authentication (foundation implemented; local DB verification pending)
 
-- [ ] Add authentication and a Supabase schema with user/farm ownership and Row Level Security.
+- [x] Add optional Supabase email sign-in/sign-up routes and cookie-backed session handling.
+- [x] Define a first farm/zone/plant/sensor/reading/automation/alert schema with explicit grants and row-level ownership policies.
+- [x] Add an authenticated endpoint for user-triggered plant-profile and current-reading snapshot save/load.
+- [x] Keep the mock-data dashboard usable when Supabase credentials are absent.
+- [ ] Start Supabase locally and apply/verify the migration (Docker is not available in this environment).
+- [ ] Configure a hosted Supabase project and verify authentication/data access only after the project owner supplies/configures it; no live resources have been changed.
+
+### P4 — Future integrations
+
 - [ ] Add server-mediated AI and weather integrations, separating observations, forecasts, and hypotheses.
 - [ ] Define hardware adapter boundaries for later physical sensor integration.
 

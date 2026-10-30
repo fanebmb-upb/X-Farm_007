@@ -365,13 +365,13 @@ export function parseSimulationState(raw: string | null): SimulationState | null
   try {
     const value: unknown = JSON.parse(raw);
     if (!isRecord(value) || value.version !== 2 || value.zoneId !== ZONE_ID || !isTimestamp(value.currentTime)) return null;
-    if (!Array.isArray(value.plants) || value.plants.length > 100 || !value.plants.every(isPlant)) return null;
-    if (!Array.isArray(value.readings) || value.readings.length > 120 || !value.readings.every(isReading)) return null;
+    if (!Array.isArray(value.plants) || value.plants.length > 100 || !value.plants.every(isPersistablePlant)) return null;
+    if (!Array.isArray(value.readings) || value.readings.length > 120 || !value.readings.every(isPersistableReading)) return null;
     if (!Array.isArray(value.events) || value.events.length > 100 || !value.events.every(isEvent)) return null;
     if (!isRecord(value.history) || Object.keys(value.history).length > 120) return null;
     const history: Record<string, SensorReading[]> = {};
     for (const [sensorId, series] of Object.entries(value.history)) {
-      if (!Array.isArray(series) || series.length > HISTORY_HOURS + 1 || !series.every((reading) => isReading(reading) && reading.sensorId === sensorId)) return null;
+      if (!Array.isArray(series) || series.length > HISTORY_HOURS + 1 || !series.every((reading) => isPersistableReading(reading) && reading.sensorId === sensorId)) return null;
       history[sensorId] = series;
     }
     const automation = value.automation === undefined ? structuredClone(defaultAutomationState) : value.automation;
@@ -398,9 +398,9 @@ function isRange(value: unknown): value is Range {
   return isRecord(value) && typeof value.min === "number" && Number.isFinite(value.min) && typeof value.max === "number" && Number.isFinite(value.max) && value.min < value.max;
 }
 
-function isPlant(value: unknown): value is Plant {
-  if (!isRecord(value) || typeof value.id !== "string" || typeof value.name !== "string" || typeof value.speciesId !== "string" || !(value.speciesId in speciesProfiles)) return false;
-  if (typeof value.scientificName !== "string" || typeof value.variety !== "string" || typeof value.stage !== "string" || typeof value.plantingDate !== "string" || !Number.isFinite(Date.parse(value.plantingDate))) return false;
+export function isPersistablePlant(value: unknown): value is Plant {
+  if (!isRecord(value) || typeof value.id !== "string" || value.id.length < 1 || value.id.length > 100 || typeof value.name !== "string" || value.name.length < 1 || value.name.length > 60 || typeof value.speciesId !== "string" || !(value.speciesId in speciesProfiles)) return false;
+  if (typeof value.scientificName !== "string" || value.scientificName.length > 150 || typeof value.variety !== "string" || value.variety.length > 100 || typeof value.stage !== "string" || !["Seedling", "Vegetative", "Flowering", "Fruiting", "Harvest"].includes(value.stage) || typeof value.plantingDate !== "string" || !Number.isFinite(Date.parse(value.plantingDate))) return false;
   if (typeof value.growthProgress !== "number" || !Number.isFinite(value.growthProgress) || value.growthProgress < 0 || value.growthProgress > 100) return false;
   if (typeof value.irrigationIntervalHours !== "number" || !Number.isFinite(value.irrigationIntervalHours) || !isTimestamp(value.lastWateredAt)) return false;
   if (!isRecord(value.targetConditions)) return false;
@@ -408,10 +408,10 @@ function isPlant(value: unknown): value is Plant {
   return plantTargetMetrics.every((metric) => isRange(conditions[metric]));
 }
 
-function isReading(value: unknown): value is SensorReading {
-  if (!isRecord(value) || typeof value.sensorId !== "string" || typeof value.metric !== "string" || typeof value.name !== "string" || typeof value.unit !== "string") return false;
+export function isPersistableReading(value: unknown): value is SensorReading {
+  if (!isRecord(value) || typeof value.sensorId !== "string" || value.sensorId.length < 1 || value.sensorId.length > 100 || typeof value.metric !== "string" || typeof value.name !== "string" || value.name.length > 100 || typeof value.unit !== "string" || value.unit.length > 32) return false;
   if (typeof value.value !== "number" || !Number.isFinite(value.value) || !isRange(value.targetRange) || !isTimestamp(value.timestamp)) return false;
-  if (value.zoneId !== ZONE_ID || !(value.plantId === null || typeof value.plantId === "string")) return false;
+  if (value.zoneId !== ZONE_ID || !(value.plantId === null || (typeof value.plantId === "string" && value.plantId.length <= 100))) return false;
   return value.status === "normal" || value.status === "watch";
 }
 

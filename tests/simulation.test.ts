@@ -1,9 +1,18 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { SIMULATION_STORAGE_KEY, speciesProfiles } from "../lib/mock-data.ts";
-import { advanceSimulation, createInitialSimulationState, getAlerts, getPeriodSamples, getPlantHealth, irrigateSimulation, parseSimulationState, savePlantProfile, serializeSimulationState, setActuatorOverride, updateAutomationRules, validateAutomationRules, validatePlantDraft } from "../lib/simulation.ts";
+import { advanceSimulation, createInitialSimulationState, getAlerts, getPeriodSamples, getPlantHealth, irrigateSimulation, isPersistablePlant, isPersistableReading, parseSimulationState, savePlantProfile, serializeSimulationState, setActuatorOverride, updateAutomationRules, validateAutomationRules, validatePlantDraft } from "../lib/simulation.ts";
 
 const start = "2026-10-30T00:00:00.000Z";
+
+test("account persistence validators accept simulation records and reject malformed values", () => {
+  const state = createInitialSimulationState(start);
+  assert.equal(isPersistablePlant(state.plants[0]), true);
+  assert.equal(isPersistableReading(state.readings[0]), true);
+  assert.equal(isPersistablePlant({ ...state.plants[0], name: "x".repeat(61) }), false);
+  assert.equal(isPersistableReading({ ...state.readings[0], value: Number.NaN }), false);
+  assert.equal(isPersistableReading({ ...state.readings[0], timestamp: "not-a-date" }), false);
+});
 
 test("initial state creates timestamped virtual readings for the full sensor set", () => {
   const state = createInitialSimulationState(start);
