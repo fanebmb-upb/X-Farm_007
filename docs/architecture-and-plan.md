@@ -9,6 +9,7 @@ The project uses Next.js App Router, TypeScript, Tailwind CSS v4, and small shar
 ## Application architecture
 
 ```text
+.github/workflows/    CI for typecheck, tests, lint, and production build
 app/                    Next.js routes, root layout, global design tokens
 components/             Dashboard composition and reusable UI
   ui/                   Shared Button and Icon primitives
