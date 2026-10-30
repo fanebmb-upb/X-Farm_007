@@ -9,6 +9,7 @@ import { PlantProfileDialog } from "@/components/plant-profile-dialog";
 import { AuthControl } from "@/components/auth-control";
 import { AccountSyncControl } from "@/components/account-sync-control";
 import { WeatherView } from "@/components/weather-view";
+import { AssistantView } from "@/components/assistant-view";
 import { navigationItems, sensorDefinitions, SIMULATION_STORAGE_KEY, type AutomationRules, type AutomationState, type FarmAlert, type FarmEvent, type NavigationId, type Plant, type PlantDraft, type SensorReading, type SimulationState } from "@/lib/mock-data";
 import { advanceSimulation, createInitialSimulationState, getAlerts, getPeriodSamples, getPlantHealth, irrigateSimulation, parseSimulationState, savePlantProfile, serializeSimulationState, setActuatorOverride, updateAutomationRules, validateAutomationRules } from "@/lib/simulation";
 
@@ -21,7 +22,7 @@ const sectionDescriptions: Record<NavigationId, string> = {
   dashboard: "Monitor your plants, sensors, and automation in one place.",
   plants: "Manage plant profiles, growth stages, and preferred conditions.",
   analytics: "Review simulated sensor trends and compare time periods.",
-  assistant: "Agricultural guidance will be connected in a later phase.",
+  assistant: "Ask questions grounded in your simulated farm conditions.",
   automation: "Configure virtual rules, review controls, and inspect estimated resource use.",
   weather: "Review local weather forecasts and potential growing risks.",
   settings: "Control the virtual clock and local simulation data.",
@@ -197,8 +198,10 @@ export function FarmDashboard() {
             <section className="full-section settings-page"><div className="section-heading"><Icon name="sliders" size={19} /><h2>Simulation Controls</h2></div><p>The virtual clock advances one hour for every three seconds while the simulation is running.</p><div className="settings-action"><span><b>{simulationRunning ? "Simulation running" : "Simulation paused"}</b><small>{formatTimestamp(simulation.currentTime, { dateStyle: "full", timeStyle: "short", timeZone: "Europe/Bucharest" })}</small></span><Button variant="soft" onClick={() => setSimulationRunning((current) => !current)}><Icon name={simulationRunning ? "pause" : "play"} size={15} />{simulationRunning ? "Pause simulation" : "Start simulation"}</Button></div><div className="settings-action"><span><b>Browser storage</b><small>{persistenceState === "unavailable" ? "Local storage is unavailable; changes reset when this tab closes." : "Plant profiles and the last 30 days of virtual readings are saved on this device."}</small></span><Button variant="secondary" onClick={clearSavedSimulation}>Reset simulation</Button></div><div className="settings-action account-sync-row"><span><b>Supabase account</b><small>Account sync stores plant profiles and a reading snapshot in your private farm.</small></span><AccountSyncControl simulation={simulation} onLoad={(saved) => { setSimulation(saved); setSimulationRunning(false); }} /></div></section>
           ) : activeSection === "weather" ? (
             <WeatherView />
+          ) : activeSection === "assistant" ? (
+            <AssistantView plants={simulation.plants} readings={simulation.readings} alerts={alerts} events={simulation.events} />
           ) : (
-            <section className="coming-soon-panel" aria-live="polite"><div className="coming-icon"><Icon name="sparkles" size={26} /></div><h2>AI guidance comes later</h2><p>The assistant will provide data-grounded agricultural explanations in a later phase. No external AI service is connected.</p><button className="text-button" onClick={() => selectSection("dashboard")}>Return to dashboard <Icon name="chevron" size={15} /></button></section>
+            <section className="coming-soon-panel" aria-live="polite"><div className="coming-icon"><Icon name="sparkles" size={26} /></div><h2>Section unavailable</h2><p>This section is not available yet.</p><button className="text-button" onClick={() => selectSection("dashboard")}>Return to dashboard <Icon name="chevron" size={15} /></button></section>
           )}
 
           <footer className="page-footer">X_Farm V0.1 <span>Sensor readings and virtual actions are simulated; weather data is forecast-based.</span><span className="save-state">{persistenceState === "unavailable" ? "Not saved" : persistenceState === "loading" ? "Loading saved simulation…" : "Saved in this browser"}</span></footer>

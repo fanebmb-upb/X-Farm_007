@@ -514,3 +514,48 @@ h1 { font-size: 29px; font-weight: 710; letter-spacing: -.9px; line-height: 1.2;
   .weather-day-card { min-height: 118px; padding: 9px; }
   .weather-risks ul { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* Context-aware agricultural assistant. */
+.assistant-page { display: flex; min-height: min(680px, calc(100vh - 180px)); flex-direction: column; padding-bottom: 24px; }
+.assistant-header { display: flex; align-items: end; justify-content: space-between; gap: 20px; }
+.assistant-kicker { display: inline-flex; align-items: center; gap: 6px; color: #597761; font-size: 9px; font-weight: 700; letter-spacing: .09em; }
+.assistant-header h2 { margin-top: 9px; color: #202924; font-size: 22px; font-weight: 650; letter-spacing: -.4px; }
+.assistant-header p { margin-top: 5px; color: var(--body); font-size: 11px; }
+.assistant-status { display: inline-flex; align-items: center; gap: 7px; border: 1px solid #dce9df; border-radius: 20px; background: #f5faf6; padding: 7px 10px; color: #4b7455; font-size: 10px; white-space: nowrap; }
+.assistant-status > span { width: 7px; height: 7px; border-radius: 50%; background: #5e9a69; }
+.assistant-status-offline { border-color: #eee5d1; background: #fffbf2; color: #876b31; }
+.assistant-status-offline > span { background: #d39c3f; }
+.assistant-setup { margin-top: 20px; border: 1px solid #eee5d1; border-radius: 5px; background: #fffbf2; padding: 12px 14px; color: #725d32; font-size: 11px; }
+.assistant-setup p { margin-top: 5px; color: #88764f; line-height: 1.6; }
+.assistant-setup code { border-radius: 3px; background: #f5edd9; padding: 1px 4px; }
+.assistant-chat { display: flex; min-height: 440px; flex: 1; flex-direction: column; margin-top: 19px; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
+.assistant-transcript { display: flex; min-height: 300px; flex: 1; flex-direction: column; gap: 14px; overflow: auto; padding: 18px; }
+.assistant-welcome { display: flex; max-width: 560px; align-items: flex-start; gap: 10px; margin: auto; color: #344038; }
+.assistant-avatar { display: grid; width: 32px; height: 32px; flex: 0 0 auto; place-items: center; border-radius: 50%; background: #edf5ee; color: var(--forest); }
+.assistant-welcome b { font-size: 12px; font-weight: 650; }
+.assistant-welcome p { margin-top: 5px; color: #77837b; font-size: 11px; line-height: 1.65; }
+.assistant-message { width: fit-content; max-width: min(82%, 700px); border: 1px solid #e5ebe6; border-radius: 6px; background: #f8faf8; padding: 10px 12px; }
+.assistant-message-user { align-self: flex-end; border-color: #d9e9dc; background: #f0f7f1; }
+.assistant-message-label { display: block; margin-bottom: 5px; color: #6a7c6f; font-size: 9px; font-weight: 650; }
+.assistant-message p { color: #37423a; font-size: 11px; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; }
+.assistant-thinking { display: flex; align-items: center; gap: 8px; color: #78857c; font-size: 10px; }
+.assistant-spinner { width: 13px; height: 13px; border: 2px solid #e3ebe4; border-top-color: #5c8463; border-radius: 50%; animation: assistant-spin .8s linear infinite; }
+@keyframes assistant-spin { to { transform: rotate(360deg); } }
+.assistant-error { margin: 0 16px 10px; border-left: 2px solid #d39525; background: #fff8e9; padding: 8px 10px; color: #855d16; font-size: 10px; }
+.assistant-suggestions { display: flex; flex-wrap: wrap; gap: 7px; padding: 0 16px 12px; }
+.assistant-suggestions button { border: 1px solid #e0e8e2; border-radius: 18px; background: #fff; padding: 7px 10px; color: #55705c; font-size: 9px; text-align: left; }
+.assistant-suggestions button:hover:not(:disabled) { border-color: #b8cfbd; background: #f7faf7; }
+.assistant-composer { display: flex; align-items: end; gap: 9px; border-top: 1px solid var(--line-soft); padding: 12px; }
+.assistant-composer textarea { width: 100%; min-height: 44px; max-height: 130px; resize: vertical; border: 1px solid #dce3de; border-radius: 4px; padding: 10px; color: var(--ink); font: inherit; font-size: 11px; line-height: 1.5; }
+.assistant-composer .primary-button { min-height: 40px; margin: 0; white-space: nowrap; }
+.assistant-disclaimer { margin-top: 11px; color: #89948d; font-size: 9px; line-height: 1.6; }
+
+@media (max-width: 640px) {
+  .assistant-page { min-height: calc(100vh - 170px); }
+  .assistant-header { align-items: flex-start; flex-direction: column; gap: 10px; }
+  .assistant-chat { min-height: 390px; }
+  .assistant-transcript { min-height: 260px; padding: 13px; }
+  .assistant-message { max-width: 94%; }
+  .assistant-composer { align-items: stretch; }
+  .assistant-composer .primary-button { min-height: 40px; padding: 0 11px; }
+}

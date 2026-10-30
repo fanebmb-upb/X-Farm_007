@@ -34,6 +34,8 @@ The checked-in migration has been applied and verified against the local Supabas
 
 The Weather section uses Open-Meteo's no-key API for evaluation, with attribution in the interface. Its free API is limited to non-commercial use; a commercial product must use an appropriately licensed endpoint. Weather forecasts remain advisory and never change simulated sensor values or trigger automation.
 
+The AI Assistant uses the OpenAI Responses API from a server route. To enable it, set `OPENAI_API_KEY` in the server environment (and optionally `OPENAI_MODEL`; defaults to `gpt-6-luna`) and restart the app. Never add the key to a `NEXT_PUBLIC_` variable. Each request sends the user's question, the last five conversation turns, and a bounded snapshot of simulated plants, readings, alerts, and automation events. Conversations are kept in browser memory only; responses are requested with provider storage disabled. OpenAI API usage may incur charges on the configured account. Recommendations are advisory and cannot execute automation.
+
 ## Checks
 
 ```sh

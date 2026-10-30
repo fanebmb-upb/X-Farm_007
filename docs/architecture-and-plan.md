@@ -38,7 +38,7 @@ docs/                   Architecture, delivery plan, design reference
 | Resource estimates | Simulated water and energy totals recorded with automation activity |
 | Persistence | Plant profiles, simulation clock, readings, events, automation settings, and alerts save locally; optional Supabase account sync stores plant profiles, current readings, automation settings, event history, and active alerts |
 | Authentication and data ownership | Optional Supabase Auth routes and a first migration with user-owned farms/zones, explicit grants, and row-level policies |
-| Integrations | Weather forecasts use server-mediated Open-Meteo and GeoNames location search; AI and hardware integrations remain future work; no hosted Supabase project is configured |
+| Integrations | Weather forecasts use server-mediated Open-Meteo and GeoNames location search; the AI Assistant uses a server-side OpenAI Responses API route when configured; hardware integration remains future work; no hosted Supabase project is configured |
 
 ## Prioritized implementation plan
 
@@ -82,7 +82,7 @@ docs/                   Architecture, delivery plan, design reference
 ### P4 — Future integrations
 
 - [x] Add server-mediated Open-Meteo geocoding and seven-day forecasts with forecast-derived risks clearly separated from simulated sensor readings and automation.
-- [ ] Add a server-mediated AI assistant, clearly distinguishing simulated facts from predictions and hypotheses.
+- [x] Add a server-mediated OpenAI Responses API assistant with bounded farm context, explicit simulated-data and uncertainty instructions, and no automation access.
 - [ ] Define hardware adapter boundaries for later physical sensor integration.
 
 AI chat, live weather, satellite feeds, machine learning, physical sensors, and production database setup are not blockers for V0.1. No production deployment or live database resource has been changed.
