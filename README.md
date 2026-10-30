@@ -2,6 +2,10 @@
 
 X_Farm is a software-only agricultural monitoring MVP. The first release uses virtual plants and simulated environmental readings; no sensors or live data services are required.
 
+## Live application
+
+Open the public app at <https://x-farm-007.vercel.app>.
+
 ## Local development
 
 ```sh
