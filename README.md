@@ -4,7 +4,7 @@ X_Farm is a software-only agricultural monitoring MVP. The first release uses vi
 
 ## Live application
 
-Open the public app at <https://x-farm-007.vercel.app>.
+Open the public app at <https://x-farm-007-psi.vercel.app>.
 
 ## Local development
 
