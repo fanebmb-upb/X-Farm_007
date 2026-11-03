@@ -9,7 +9,7 @@ import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 export function AuthForm({ confirmationError = false }: { confirmationError?: boolean }) {
   const [mode, setMode] = useState<"sign-in" | "sign-up">("sign-in");
   const [pending, setPending] = useState(false);
-  const [error, setError] = useState(confirmationError ? "The confirmation link could not be verified. Request a new link and try again." : "");
+  const [error, setError] = useState(confirmationError ? "We couldn’t finish signing you in from that link. If you already confirmed your email, sign in below; otherwise request a new link." : "");
   const [notice, setNotice] = useState("");
   const configured = isSupabaseConfigured();
   const router = useRouter();

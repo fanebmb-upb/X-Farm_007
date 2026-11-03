@@ -1,10 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { safeNextPath } from "@/lib/supabase/auth-redirect";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-
-function safeNextPath(value: string | null) {
-  if (!value || !value.startsWith("/") || value.startsWith("//") || value.includes("\\")) return "/";
-  return value;
-}
 
 export async function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get("code");
