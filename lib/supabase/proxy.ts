@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { isPublicRoute } from "./auth-redirect";
 import { getSupabaseCredentials } from "./env";
 import type { Database } from "./database.types";
 
@@ -24,7 +25,7 @@ export async function updateSupabaseSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
   const claims = data?.claims;
   const pathname = request.nextUrl.pathname;
-  const publicRoute = pathname === "/login" || pathname.startsWith("/auth/callback") || pathname.startsWith("/auth/confirm");
+  const publicRoute = isPublicRoute(pathname);
 
   if (!claims && !publicRoute) {
     if (pathname.startsWith("/api/")) return NextResponse.json({ error: "Authentication required." }, { status: 401 });
