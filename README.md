@@ -4,7 +4,7 @@ X_Farm is a software-only agricultural monitoring MVP. The first release uses vi
 
 ## Live application
 
-Open the public app at <https://x-farm-007.vercel.app>. The source for the deployed app is on [`feature/phase-3-supabase`](https://github.com/fanebmb-upb/X-Farm_007/tree/feature/phase-3-supabase). Vercel hosts the site because the Next.js app includes server API routes that GitHub Pages cannot run.
+Open the public app at <https://x-farm-007-psi.vercel.app>. The source for the deployed app is on [`feature/phase-3-supabase`](https://github.com/fanebmb-upb/X-Farm_007/tree/feature/phase-3-supabase). Vercel hosts the site because the Next.js app includes server API routes that GitHub Pages cannot run.
 
 ## Local development
 
