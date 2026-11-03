@@ -615,3 +615,4 @@ h1 { font-size: 29px; font-weight: 710; letter-spacing: -.9px; line-height: 1.2;
   .assistant-composer { align-items: stretch; }
   .assistant-composer .primary-button { min-height: 40px; padding: 0 11px; }
 }
+.auth-forgot { align-self: flex-end; margin-top: -8px; border: 0; background: transparent; padding: 0; color: var(--forest); font-size: 11px; text-decoration: underline; text-underline-offset: 2px; }

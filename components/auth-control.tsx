@@ -39,5 +39,5 @@ export function AuthControl() {
 
   if (!configured || (!checking && !email)) return <Link className="account-link" href="/login">Sign in</Link>;
   if (checking) return <span className="account-status" aria-live="polite">Checking account…</span>;
-  return <div className="account-control"><span className="account-email" title={email ?? undefined}>{email}</span><button className="account-link" type="button" onClick={signOut} disabled={pending}>{pending ? "Signing out…" : "Sign out"}</button></div>;
+  return <div className="account-control"><span className="account-email" title={email ?? undefined}>{email}</span><Link className="account-link" href="/reset-password">Change password</Link><button className="account-link" type="button" onClick={signOut} disabled={pending}>{pending ? "Signing out…" : "Sign out"}</button></div>;
 }
