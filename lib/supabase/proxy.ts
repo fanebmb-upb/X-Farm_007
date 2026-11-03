@@ -24,7 +24,7 @@ export async function updateSupabaseSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
   const claims = data?.claims;
   const pathname = request.nextUrl.pathname;
-  const publicRoute = pathname === "/login" || pathname.startsWith("/auth/callback");
+  const publicRoute = pathname === "/login" || pathname.startsWith("/auth/callback") || pathname.startsWith("/auth/confirm");
 
   if (!claims && !publicRoute) {
     if (pathname.startsWith("/api/")) return NextResponse.json({ error: "Authentication required." }, { status: 401 });
