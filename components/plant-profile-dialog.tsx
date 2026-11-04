@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
+import { NumberInput } from "@/components/ui/number-input";
 import { speciesProfiles, type GrowthStage, type Plant, type PlantDraft, type PlantSpeciesId, type PlantTargetMetric, type PlantTargets, type Range } from "@/lib/mock-data";
 
 const stageOptions: GrowthStage[] = ["Seedling", "Vegetative", "Flowering", "Fruiting", "Harvest"];
@@ -61,9 +62,9 @@ export function PlantProfileDialog({ plant, currentDate, onClose, onSave }: { pl
             <label className="form-field">Scientific name<input value={scientificName} onChange={(event) => setScientificName(event.target.value)} /></label>
             <label className="form-field">Planting date<input type="date" required max={currentDate.slice(0, 10)} value={plantingDate} onChange={(event) => setPlantingDate(event.target.value)} /></label>
             <label className="form-field">Growth stage<select value={stage} onChange={(event) => setStage(event.target.value as GrowthStage)}>{stageOptions.map((option) => <option key={option}>{option}</option>)}</select></label>
-            <label className="form-field">Irrigation interval<input type="number" min="1" max="168" required value={irrigationIntervalHours} onChange={(event) => setIrrigationIntervalHours(Number(event.target.value))} /><span className="field-hint">Hours between expected watering</span></label>
+            <label className="form-field">Irrigation interval<NumberInput min="1" max="168" required value={irrigationIntervalHours} onValueChange={setIrrigationIntervalHours} /><span className="field-hint">Hours between expected watering</span></label>
           </div>
-          <fieldset className="targets-fieldset"><legend>Preferred growing conditions</legend><div className="target-editor-grid">{targetFields.map((field) => <div className="target-editor" key={field.metric}><span>{field.title}</span><div className="target-range-fields"><label><span className="sr-only">{field.title} minimum</span><input type="number" min={field.min} max={field.max} step={field.step} value={targets[field.metric].min} onChange={(event) => updateTarget(field.metric, "min", Number(event.target.value))} /></label><small>to</small><label><span className="sr-only">{field.title} maximum</span><input type="number" min={field.min} max={field.max} step={field.step} value={targets[field.metric].max} onChange={(event) => updateTarget(field.metric, "max", Number(event.target.value))} /></label><em>{field.unit}</em></div></div>)}</div></fieldset>
+          <fieldset className="targets-fieldset"><legend>Preferred growing conditions</legend><div className="target-editor-grid">{targetFields.map((field) => <div className="target-editor" key={field.metric}><span>{field.title}</span><div className="target-range-fields"><label><span className="sr-only">{field.title} minimum</span><NumberInput required min={field.min} max={field.max} step={field.step} value={targets[field.metric].min} onValueChange={(value) => updateTarget(field.metric, "min", value)} /></label><small>to</small><label><span className="sr-only">{field.title} maximum</span><NumberInput required min={field.min} max={field.max} step={field.step} value={targets[field.metric].max} onValueChange={(value) => updateTarget(field.metric, "max", value)} /></label><em>{field.unit}</em></div></div>)}</div></fieldset>
           {error && <p className="form-error" role="alert">{error}</p>}
           <div className="modal-actions"><Button variant="secondary" onClick={onClose}>Cancel</Button><Button type="submit"><Icon name="check" size={17} />{plant ? "Save profile" : "Create plant"}</Button></div>
         </form>

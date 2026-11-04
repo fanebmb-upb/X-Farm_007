@@ -5,6 +5,7 @@ import { AnalyticsChart } from "@/components/analytics-chart";
 import { SensorChart } from "@/components/sensor-chart";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
+import { NumberInput } from "@/components/ui/number-input";
 import { PlantProfileDialog } from "@/components/plant-profile-dialog";
 import { AuthControl } from "@/components/auth-control";
 import { AccountSyncControl } from "@/components/account-sync-control";
@@ -273,19 +274,19 @@ function AutomationView({ automation, events, storageReady, onSaveRules, onOverr
           <fieldset className="rule-card">
             <legend>Irrigation</legend>
             <label className="rule-enabled"><input type="checkbox" checked={draft.irrigation.enabled} onChange={(event) => setDraft((current) => ({ ...current, irrigation: { ...current.irrigation, enabled: event.target.checked } }))} />Enable automatic irrigation</label>
-            <label className="rule-field">Run when soil moisture falls below<input aria-label="Irrigation threshold" type="number" min="5" max="80" step="1" value={draft.irrigation.thresholdPercent} onChange={(event) => { if (event.target.value) setDraft((current) => ({ ...current, irrigation: { ...current.irrigation, thresholdPercent: Number(event.target.value) } })); }} /><span>%</span></label>
+            <label className="rule-field">Run when soil moisture falls below<NumberInput aria-label="Irrigation threshold" required min="5" max="80" step="1" value={draft.irrigation.thresholdPercent} onValueChange={(value) => setDraft((current) => ({ ...current, irrigation: { ...current.irrigation, thresholdPercent: value } }))} /><span>%</span></label>
             <Button variant="outline" onClick={onIrrigate} disabled={!storageReady}><Icon name="droplet" size={16} />Run irrigation now</Button>
           </fieldset>
           <fieldset className="rule-card">
             <legend>Ventilation</legend>
             <label className="rule-enabled"><input type="checkbox" checked={draft.ventilation.enabled} onChange={(event) => setDraft((current) => ({ ...current, ventilation: { ...current.ventilation, enabled: event.target.checked } }))} />Enable automatic ventilation</label>
-            <label className="rule-field">Maximum air temperature<input aria-label="Ventilation temperature threshold" type="number" min="10" max="45" step="0.5" value={draft.ventilation.maximumTemperatureC} onChange={(event) => { if (event.target.value) setDraft((current) => ({ ...current, ventilation: { ...current.ventilation, maximumTemperatureC: Number(event.target.value) } })); }} /><span>°C</span></label>
+            <label className="rule-field">Maximum air temperature<NumberInput aria-label="Ventilation temperature threshold" required min="10" max="45" step="0.5" value={draft.ventilation.maximumTemperatureC} onValueChange={(value) => setDraft((current) => ({ ...current, ventilation: { ...current.ventilation, maximumTemperatureC: value } }))} /><span>°C</span></label>
             <ActuatorOverride label="Ventilation" active={automation.actuators.ventilation} override={automation.overrides.ventilation} onOverride={(value) => onOverride("ventilation", value)} disabled={!storageReady} />
           </fieldset>
           <fieldset className="rule-card">
             <legend>Lighting</legend>
             <label className="rule-enabled"><input type="checkbox" checked={draft.lighting.enabled} onChange={(event) => setDraft((current) => ({ ...current, lighting: { ...current.lighting, enabled: event.target.checked } }))} />Enable automatic lighting</label>
-            <label className="rule-field">Maintain PPFD during 06:00–19:00<input aria-label="Lighting PPFD target" type="number" min="50" max="1600" step="10" value={draft.lighting.targetPpfd} onChange={(event) => { if (event.target.value) setDraft((current) => ({ ...current, lighting: { ...current.lighting, targetPpfd: Number(event.target.value) } })); }} /><span>µmol/m²/s</span></label>
+            <label className="rule-field">Maintain PPFD during 06:00–19:00<NumberInput aria-label="Lighting PPFD target" required min="50" max="1600" step="10" value={draft.lighting.targetPpfd} onValueChange={(value) => setDraft((current) => ({ ...current, lighting: { ...current.lighting, targetPpfd: value } }))} /><span>µmol/m²/s</span></label>
             <ActuatorOverride label="Grow lights" active={automation.actuators.growLights} override={automation.overrides.growLights} onOverride={(value) => onOverride("growLights", value)} disabled={!storageReady} />
           </fieldset>
         </div>
