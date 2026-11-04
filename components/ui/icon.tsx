@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-type IconName = "home" | "leaf" | "chart" | "sparkles" | "settings" | "cloud" | "sliders" | "plus" | "chevron" | "bell" | "droplet" | "thermometer" | "sun" | "clock" | "play" | "pause" | "close" | "check" | "alert" | "sprout" | "coins" | "clipboard";
+type IconName = "home" | "leaf" | "chart" | "sparkles" | "settings" | "cloud" | "sliders" | "plus" | "chevron" | "bell" | "droplet" | "thermometer" | "sun" | "clock" | "play" | "pause" | "close" | "check" | "alert" | "sprout" | "coins" | "clipboard" | "moon";
 
 const paths: Record<IconName, ReactNode> = {
   home: <><path d="m3 10 9-7 9 7" /><path d="M5 9v11h14V9M9 20v-6h6v6" /></>,
@@ -23,6 +23,7 @@ const paths: Record<IconName, ReactNode> = {
   check: <path d="m5 12 4 4L19 6" />,
   alert: <><path d="M10.3 3.9 2.4 17.5A2 2 0 0 0 4.1 20.5h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" /><path d="M12 9v4m0 3h.01" /></>,
   clipboard: <><rect x="5" y="4" width="14" height="17" rx="2" /><path d="M9 4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2H9V4ZM9 11h6M9 15h6" /></>,
+  moon: <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z" />,
   coins: <><ellipse cx="9" cy="7" rx="6" ry="3" /><path d="M3 7v5c0 1.7 2.7 3 6 3M15 7v2" /><ellipse cx="15" cy="14" rx="6" ry="3" /><path d="M9 14v3c0 1.7 2.7 3 6 3s6-1.3 6-3v-3" /></>,
   sprout: <><path d="M12 22v-9" /><path d="M12 13C4 13 3 8 3 4c6 0 9 2 9 9ZM12 17c8 0 9-5 9-9-6 0-9 2-9 9Z" /></>,
 };

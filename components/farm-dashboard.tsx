@@ -14,6 +14,7 @@ import { AssistantView } from "@/components/assistant-view";
 import { HowItWorksView } from "@/components/how-it-works-view";
 import { FinanceView } from "@/components/finance-view";
 import { PlantCareView } from "@/components/plant-care-view";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { navigationItems, sensorDefinitions, SIMULATION_STORAGE_KEY, type AutomationRules, type AutomationState, type FarmAlert, type FarmEvent, type NavigationId, type Plant, type PlantDraft, type SensorReading, type SimulationState } from "@/lib/mock-data";
 import { advanceSimulation, createInitialSimulationState, getAlerts, getPeriodSamples, getPlantHealth, irrigateSimulation, parseSimulationState, savePlantProfile, serializeSimulationState, setActuatorOverride, updateAutomationRules, validateAutomationRules } from "@/lib/simulation";
 
@@ -174,7 +175,7 @@ export function FarmDashboard() {
         <div className="content-wrap">
           <header className="page-header">
             <div className="page-heading"><div className="title-line"><h1>{pageTitle}</h1><span className="simulated-label"><span className="sim-dot" />SIMULATED DATA</span></div><p>{sectionDescriptions[activeSection]}</p></div>
-            <div className="page-actions"><AuthControl /><label className="zone-select-wrap"><span className="sr-only">Growing zone</span><Icon name="sprout" size={19} /><select value={simulation.zoneId} disabled aria-label="Growing zone"><option value="greenhouse-a">Greenhouse A</option></select><Icon name="chevron" size={16} className="select-chevron" /></label><Button onClick={() => setProfileDialog("new")}><Icon name="plus" size={18} /><span>Add Plant</span></Button></div>
+            <div className="page-actions"><ThemeToggle /><AuthControl /><label className="zone-select-wrap"><span className="sr-only">Growing zone</span><Icon name="sprout" size={19} /><select value={simulation.zoneId} disabled aria-label="Growing zone"><option value="greenhouse-a">Greenhouse A</option></select><Icon name="chevron" size={16} className="select-chevron" /></label><Button onClick={() => setProfileDialog("new")}><Icon name="plus" size={18} /><span>Add Plant</span></Button></div>
           </header>
 
           {activeSection === "dashboard" ? (
