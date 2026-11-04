@@ -176,6 +176,7 @@ export const initialPlants: Plant[] = [
 export const navigationItems = [
   { id: "dashboard", label: "Dashboard", icon: "home" },
   { id: "plants", label: "My Plants", icon: "leaf" },
+  { id: "care", label: "Plant Care", icon: "clipboard" },
   { id: "analytics", label: "Sensor Analytics", icon: "chart" },
   { id: "assistant", label: "AI Assistant", icon: "sparkles" },
   { id: "finance", label: "Profit & Costs", icon: "coins" },

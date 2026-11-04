@@ -13,6 +13,7 @@ import { WeatherView } from "@/components/weather-view";
 import { AssistantView } from "@/components/assistant-view";
 import { HowItWorksView } from "@/components/how-it-works-view";
 import { FinanceView } from "@/components/finance-view";
+import { PlantCareView } from "@/components/plant-care-view";
 import { navigationItems, sensorDefinitions, SIMULATION_STORAGE_KEY, type AutomationRules, type AutomationState, type FarmAlert, type FarmEvent, type NavigationId, type Plant, type PlantDraft, type SensorReading, type SimulationState } from "@/lib/mock-data";
 import { advanceSimulation, createInitialSimulationState, getAlerts, getPeriodSamples, getPlantHealth, irrigateSimulation, parseSimulationState, savePlantProfile, serializeSimulationState, setActuatorOverride, updateAutomationRules, validateAutomationRules } from "@/lib/simulation";
 
@@ -24,6 +25,7 @@ const dashboardMetricIds = ["soil-moisture", "air-temperature", "humidity", "lig
 const sectionDescriptions: Record<NavigationId, string> = {
   dashboard: "Monitor your plants, sensors, and automation in one place.",
   plants: "Manage plant profiles, growth stages, and preferred conditions.",
+  care: "See which indicators to watch for each plant and how to keep conditions in range.",
   analytics: "Review simulated sensor trends and compare time periods.",
   assistant: "Ask questions grounded in your simulated farm conditions.",
   finance: "Estimate spending, production, and potential profit for any period.",
@@ -205,6 +207,8 @@ export function FarmDashboard() {
             <WeatherView />
           ) : activeSection === "assistant" ? (
             <AssistantView plants={simulation.plants} readings={simulation.readings} alerts={alerts} events={simulation.events} />
+          ) : activeSection === "care" ? (
+            <PlantCareView plants={simulation.plants} readings={simulation.readings} currentTime={simulation.currentTime} />
           ) : activeSection === "finance" ? (
             <FinanceView simulation={simulation} alerts={alerts} />
           ) : activeSection === "how-it-works" ? (

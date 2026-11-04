@@ -639,3 +639,31 @@ h1 { font-size: 29px; font-weight: 710; letter-spacing: -.9px; line-height: 1.2;
   .finance-inputs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .finance-species { grid-column: 1 / -1; }
 }
+
+.care-page h3 { font-size: 13px; }
+.care-plant-select { min-width: 200px; }
+.care-summary small { display: block; margin-top: 3px; color: #68746c; font-size: 10px; }
+.care-warning { color: #943f31; }
+.care-focus { border-radius: 6px; background: #f7faf7; padding: 14px 16px; }
+.care-focus p { margin-top: 6px; color: var(--body); font-size: 12px; line-height: 1.6; }
+.care-subheading { margin: 24px 0 10px; }
+.care-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 14px; }
+.care-card { display: flex; min-width: 0; flex-direction: column; gap: 8px; border: 1px solid var(--line); border-radius: 6px; background: #fff; padding: 14px; color: var(--body); font-size: 11px; line-height: 1.55; }
+.care-card-alert { border-color: #e6b9b0; }
+.care-card-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.care-card-heading h3 { color: var(--ink); }
+.care-status { flex-shrink: 0; border-radius: 999px; padding: 2px 8px; font-size: 10px; font-weight: 600; white-space: nowrap; }
+.care-status-ok { background: #edf6ef; color: #356949; }
+.care-status-low, .care-status-high { background: #fff1ef; color: #943f31; }
+.care-status-lights-off, .care-status-no-reading { background: #f1f3f2; color: #5d6962; }
+.care-value { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 10px; }
+.care-value strong { color: var(--ink); font-size: 18px; }
+.care-value span { color: #68746c; font-size: 10px; }
+.care-priority { color: var(--forest); font-size: 10px; font-weight: 650; }
+.care-action { border-radius: 4px; background: #fff1ef; padding: 8px 9px; color: #7d3528; }
+.care-card details p { margin-top: 5px; }
+.care-card summary { color: var(--forest); cursor: pointer; font-weight: 600; }
+.care-source { margin-top: auto; color: #87928b; font-size: 10px; }
+.care-note { margin: 8px 0; color: #68746c; font-size: 11px; line-height: 1.55; }
+.care-footnote { margin-top: 18px; }
+.care-table th, .care-table td { min-width: 170px; text-align: left; vertical-align: top; white-space: normal; line-height: 1.5; }
