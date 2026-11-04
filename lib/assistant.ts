@@ -1,6 +1,21 @@
 export type AssistantMessage = { role: "user" | "assistant"; content: string };
 
+export type AssistantFinance = {
+  period: { from: string; to: string; days: number };
+  currency: string;
+  recordedDays: number;
+  projectedDays: number;
+  waterLiters: number;
+  energyKwh: number;
+  costs: { energy: number; water: number; other: number; total: number };
+  production: Array<{ name: string; kilograms: number; revenue: number }>;
+  totalKilograms: number;
+  revenue: number;
+  profit: number;
+};
+
 export type AssistantContext = {
+  finance?: AssistantFinance;
   plants: Array<{ name: string; species: string; stage: string; growthProgress: number }>;
   readings: Array<{ name: string; value: number; unit: string; targetMin: number; targetMax: number; status: "normal" | "watch" }>;
   alerts: Array<{ title: string; detail: string; tone: "warning" | "info" }>;
@@ -19,6 +34,23 @@ function cleanText(value: unknown, maxLength: number) {
 
 function finite(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value);
+}
+
+function parseFinance(value: unknown): AssistantFinance | null {
+  if (!isRecord(value) || !isRecord(value.period) || !isRecord(value.costs) || !Array.isArray(value.production) || value.production.length > 30) return null;
+  const from = cleanText(value.period.from, 10);
+  const to = cleanText(value.period.to, 10);
+  const currency = cleanText(value.currency, 3);
+  const { energy, water, other, total } = value.costs;
+  const numbers = [value.period.days, value.recordedDays, value.projectedDays, value.waterLiters, value.energyKwh, energy, water, other, total, value.totalKilograms, value.revenue, value.profit];
+  if (!from || !to || !currency || !numbers.every(finite)) return null;
+  const production = value.production.map((item) => {
+    if (!isRecord(item)) return null;
+    const name = cleanText(item.name, 80);
+    return name && finite(item.kilograms) && finite(item.revenue) ? { name, kilograms: item.kilograms, revenue: item.revenue } : null;
+  });
+  if (production.some((item) => item === null)) return null;
+  return { period: { from, to, days: value.period.days }, currency, recordedDays: value.recordedDays, projectedDays: value.projectedDays, waterLiters: value.waterLiters, energyKwh: value.energyKwh, costs: { energy, water, other, total }, production, totalKilograms: value.totalKilograms, revenue: value.revenue, profit: value.profit } as AssistantFinance;
 }
 
 function parseContext(value: unknown): AssistantContext | null {
@@ -60,7 +92,9 @@ function parseContext(value: unknown): AssistantContext | null {
   });
   if (plants.some((item) => item === null) || readings.some((item) => item === null)
     || alerts.some((item) => item === null) || events.some((item) => item === null)) return null;
-  return { plants, readings, alerts, events } as AssistantContext;
+  const finance = value.finance === undefined ? undefined : parseFinance(value.finance);
+  if (finance === null) return null;
+  return { plants, readings, alerts, events, ...(finance ? { finance } : {}) } as AssistantContext;
 }
 
 export function parseAssistantRequest(value: unknown): AssistantRequest | null {

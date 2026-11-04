@@ -12,6 +12,7 @@ import { AccountSyncControl } from "@/components/account-sync-control";
 import { WeatherView } from "@/components/weather-view";
 import { AssistantView } from "@/components/assistant-view";
 import { HowItWorksView } from "@/components/how-it-works-view";
+import { FinanceView } from "@/components/finance-view";
 import { navigationItems, sensorDefinitions, SIMULATION_STORAGE_KEY, type AutomationRules, type AutomationState, type FarmAlert, type FarmEvent, type NavigationId, type Plant, type PlantDraft, type SensorReading, type SimulationState } from "@/lib/mock-data";
 import { advanceSimulation, createInitialSimulationState, getAlerts, getPeriodSamples, getPlantHealth, irrigateSimulation, parseSimulationState, savePlantProfile, serializeSimulationState, setActuatorOverride, updateAutomationRules, validateAutomationRules } from "@/lib/simulation";
 
@@ -25,6 +26,7 @@ const sectionDescriptions: Record<NavigationId, string> = {
   plants: "Manage plant profiles, growth stages, and preferred conditions.",
   analytics: "Review simulated sensor trends and compare time periods.",
   assistant: "Ask questions grounded in your simulated farm conditions.",
+  finance: "Estimate spending, production, and potential profit for any period.",
   automation: "Configure virtual rules, review controls, and inspect estimated resource use.",
   weather: "Review local weather forecasts and potential growing risks.",
   settings: "Control the virtual clock and local simulation data.",
@@ -203,6 +205,8 @@ export function FarmDashboard() {
             <WeatherView />
           ) : activeSection === "assistant" ? (
             <AssistantView plants={simulation.plants} readings={simulation.readings} alerts={alerts} events={simulation.events} />
+          ) : activeSection === "finance" ? (
+            <FinanceView simulation={simulation} alerts={alerts} />
           ) : activeSection === "how-it-works" ? (
             <HowItWorksView />
           ) : (

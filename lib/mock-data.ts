@@ -84,6 +84,8 @@ export type FarmAlert = {
   tone: "warning" | "info";
 };
 
+export type DailyResourceLog = Record<string, { hours: number; waterLiters: number; energyKwh: number }>;
+
 export type SimulationState = {
   version: 2;
   zoneId: string;
@@ -93,6 +95,7 @@ export type SimulationState = {
   history: Record<string, SensorReading[]>;
   events: FarmEvent[];
   automation: AutomationState;
+  dailyResources?: DailyResourceLog;
 };
 
 export const defaultAutomationRules: AutomationRules = {
@@ -175,6 +178,7 @@ export const navigationItems = [
   { id: "plants", label: "My Plants", icon: "leaf" },
   { id: "analytics", label: "Sensor Analytics", icon: "chart" },
   { id: "assistant", label: "AI Assistant", icon: "sparkles" },
+  { id: "finance", label: "Profit & Costs", icon: "coins" },
   { id: "automation", label: "Automation", icon: "settings" },
   { id: "weather", label: "Weather", icon: "cloud" },
   { id: "settings", label: "Settings", icon: "sliders" },

@@ -1,3 +1,4 @@
+import { parseDailyResourceLog, recordDailyResources } from "./finance.ts";
 import {
   HISTORY_HOURS,
   ZONE_ID,
@@ -198,9 +199,11 @@ export function advanceSimulation(state: SimulationState): SimulationState {
     events.unshift(makeAutomationEvent(currentTime, events.length, growLights ? "Grow lights turned on" : "Grow lights turned off", growLights ? `Light is below ${automation.rules.lighting.targetPpfd} µmol/m²/s · simulated` : "Light target or schedule is satisfied · simulated", "light"));
   }
   automation.actuators = { ventilation, growLights };
-  automation.resources.energyKwh = round(automation.resources.energyKwh + (ventilation ? 0.15 : 0) + (growLights ? 0.35 : 0), 3);
+  const energyUsed = (ventilation ? 0.15 : 0) + (growLights ? 0.35 : 0);
+  automation.resources.energyKwh = round(automation.resources.energyKwh + energyUsed, 3);
+  const dailyResources = recordDailyResources(state.dailyResources, currentTime, { hours: 1, energyKwh: energyUsed, waterLiters: round(automation.resources.waterLiters - state.automation.resources.waterLiters, 2) });
   const history = appendSnapshot(state.history, nextReadings);
-  return { ...state, currentTime, plants: nextPlants, readings: nextReadings, history, events: events.slice(0, 100), automation };
+  return { ...state, currentTime, plants: nextPlants, readings: nextReadings, history, events: events.slice(0, 100), automation, dailyResources };
 }
 
 export function irrigateSimulation(state: SimulationState): SimulationState {
@@ -220,7 +223,7 @@ export function irrigateSimulation(state: SimulationState): SimulationState {
     detail: `Greenhouse A · ${plants.length} plants · 3 L estimated · simulated`,
     kind: "water",
   };
-  return { ...state, plants, readings, history: appendSnapshot(state.history, readings), events: [event, ...state.events].slice(0, 100), automation: { ...state.automation, resources: { ...state.automation.resources, waterLiters: round(state.automation.resources.waterLiters + 3, 2) } } };
+  return { ...state, plants, readings, history: appendSnapshot(state.history, readings), events: [event, ...state.events].slice(0, 100), automation: { ...state.automation, resources: { ...state.automation.resources, waterLiters: round(state.automation.resources.waterLiters + 3, 2) } }, dailyResources: recordDailyResources(state.dailyResources, state.currentTime, { waterLiters: 3 }) };
 }
 
 export function updateAutomationRules(state: SimulationState, rules: AutomationRules): SimulationState {
@@ -376,7 +379,7 @@ export function parseSimulationState(raw: string | null): SimulationState | null
     }
     const automation = value.automation === undefined ? structuredClone(defaultAutomationState) : value.automation;
     if (!isPersistableAutomationState(automation)) return null;
-    return { version: 2, zoneId: ZONE_ID, currentTime: value.currentTime, plants: value.plants as Plant[], readings: value.readings as SensorReading[], history, events: value.events as FarmEvent[], automation };
+    return { version: 2, zoneId: ZONE_ID, currentTime: value.currentTime, plants: value.plants as Plant[], readings: value.readings as SensorReading[], history, events: value.events as FarmEvent[], automation, dailyResources: parseDailyResourceLog(value.dailyResources) };
   } catch {
     return null;
   }

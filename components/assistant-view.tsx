@@ -14,7 +14,7 @@ function apiError(value: unknown) {
     : "The assistant could not answer. Please try again.";
 }
 
-function createContext(plants: Plant[], readings: SensorReading[], alerts: FarmAlert[], events: FarmEvent[]): AssistantContext {
+export function createAssistantContext(plants: Plant[], readings: SensorReading[], alerts: FarmAlert[], events: FarmEvent[]): AssistantContext {
   return {
     plants: plants.map(({ name, speciesId, stage, growthProgress }) => ({ name, species: speciesId, stage, growthProgress })),
     readings: readings.map(({ name, value, unit, targetRange, status }) => ({ name, value, unit, targetMin: targetRange.min, targetMax: targetRange.max, status })),
@@ -38,6 +38,7 @@ export function AssistantView({ plants, readings, alerts, events }: {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState("");
   const [configured, setConfigured] = useState<boolean | null>(null);
+  const [signInRequired, setSignInRequired] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -46,6 +47,10 @@ export function AssistantView({ plants, readings, alerts, events }: {
   useEffect(() => {
     let active = true;
     void fetch("/api/assistant").then(async (response) => {
+      if (response.status === 401) {
+        if (active) { setSignInRequired(true); setConfigured(false); }
+        return;
+      }
       const result: unknown = await response.json();
       if (active && typeof result === "object" && result !== null && "configured" in result && typeof result.configured === "boolean") setConfigured(result.configured);
     }).catch(() => { if (active) setConfigured(false); });
@@ -73,7 +78,7 @@ export function AssistantView({ plants, readings, alerts, events }: {
         body: JSON.stringify({
           message,
           history: priorMessages.map(({ role, content }) => ({ role, content })),
-          context: createContext(plants, readings, alerts, events),
+          context: createAssistantContext(plants, readings, alerts, events),
         }),
       });
       const result: unknown = await response.json();
@@ -89,10 +94,12 @@ export function AssistantView({ plants, readings, alerts, events }: {
   return <section className="full-section assistant-page" aria-labelledby="assistant-heading">
     <div className="assistant-header">
       <div><span className="assistant-kicker"><Icon name="sparkles" size={14} /> AI AGRICULTURAL ASSISTANT</span><h2 id="assistant-heading">Ask about your growing conditions</h2><p>Answers use the current farm snapshot and identify it as simulated data.</p></div>
-      <div className={`assistant-status${configured === false ? " assistant-status-offline" : ""}`}><span />{configured === null ? "Checking assistant" : configured ? "AI assistant ready" : "Setup required"}</div>
+      <div className={`assistant-status${configured === false ? " assistant-status-offline" : ""}`}><span />{configured === null ? "Checking assistant" : configured ? "AI assistant ready" : signInRequired ? "Sign in required" : "Setup required"}</div>
     </div>
 
-    {configured === false && <div className="assistant-setup" role="status"><b>Connect an OpenAI API key to enable chat.</b><p>Add <code>OPENAI_API_KEY</code> to the server environment, then restart the app. The key stays on the server and is never sent to the browser. Provider API usage may incur charges.</p></div>}
+    {signInRequired && <div className="assistant-setup" role="status"><b>Sign in to use the AI assistant.</b><p>The rest of the dashboard works without an account.</p></div>}
+
+    {configured === false && !signInRequired && <div className="assistant-setup" role="status"><b>Connect an OpenAI API key to enable chat.</b><p>Add <code>OPENAI_API_KEY</code> to the server environment, then restart the app. The key stays on the server and is never sent to the browser. Provider API usage may incur charges.</p></div>}
 
     <div className="assistant-chat" aria-label="Assistant conversation">
       <div className="assistant-transcript" ref={scrollRef} aria-live="polite" aria-relevant="additions text">
@@ -101,7 +108,7 @@ export function AssistantView({ plants, readings, alerts, events }: {
       </div>
       {error && <p className="assistant-error" role="alert">{error}</p>}
       {messages.length === 0 && configured !== false && <div className="assistant-suggestions" aria-label="Suggested questions">{suggestions.map((suggestion) => <button type="button" key={suggestion} disabled={configured === null || sending} onClick={() => setDraft(suggestion)}>{suggestion}</button>)}</div>}
-      <form className="assistant-composer" onSubmit={(event) => void submit(event)}><label className="sr-only" htmlFor="assistant-question">Your question</label><textarea id="assistant-question" rows={2} maxLength={1200} placeholder={configured === false ? "Configure the server API key to start chatting" : "Ask about readings, alerts, or plant care…"} value={draft} disabled={configured !== true || sending} onChange={(event) => setDraft(event.target.value)} /><Button type="submit" disabled={configured !== true || sending || draft.trim().length < 2}><Icon name="sparkles" size={15} />{sending ? "Sending" : "Send"}</Button></form>
+      <form className="assistant-composer" onSubmit={(event) => void submit(event)}><label className="sr-only" htmlFor="assistant-question">Your question</label><textarea id="assistant-question" rows={2} maxLength={1200} placeholder={signInRequired ? "Sign in to start chatting" : configured === false ? "Configure the server API key to start chatting" : "Ask about readings, alerts, or plant care…"} value={draft} disabled={configured !== true || sending} onChange={(event) => setDraft(event.target.value)} /><Button type="submit" disabled={configured !== true || sending || draft.trim().length < 2}><Icon name="sparkles" size={15} />{sending ? "Sending" : "Send"}</Button></form>
     </div>
 
     <p className="assistant-disclaimer">AI explanations may be inaccurate. Simulated readings are facts about this virtual scenario; causal explanations and future outcomes are hypotheses. Review recommendations before taking action. The assistant cannot control virtual actuators.</p>
