@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isSafeLabel } from "@/lib/validation";
 import { parseWeatherLocations } from "@/lib/weather";
 
 export async function GET(request: NextRequest) {
   const query = request.nextUrl.searchParams.get("q")?.trim() ?? "";
-  if (query.length < 2 || query.length > 80) {
+  if (!isSafeLabel(query, { min: 2, max: 80 })) {
     return NextResponse.json({ error: "Enter a location between 2 and 80 characters." }, { status: 400 });
   }
 

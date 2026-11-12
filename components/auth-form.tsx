@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { isValidEmail } from "@/lib/validation";
 
 export function AuthForm({ confirmationError = false }: { confirmationError?: boolean }) {
   const [mode, setMode] = useState<"sign-in" | "sign-up" | "reset">("sign-in");
@@ -33,6 +34,11 @@ export function AuthForm({ confirmationError = false }: { confirmationError?: bo
     const formData = new FormData(event.currentTarget);
     const email = String(formData.get("email") ?? "").trim();
     const password = String(formData.get("password") ?? "");
+    if (!isValidEmail(email)) {
+      setError("Enter a valid email address, for example name@example.com.");
+      setPending(false);
+      return;
+    }
     try {
       const supabase = createSupabaseBrowserClient();
       if (mode === "reset") {

@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { Icon } from "@/components/ui/icon";
+import { isSafeLabel } from "@/lib/validation";
 import { describeWeatherCode, type WeatherForecast, type WeatherLocation } from "@/lib/weather";
 
 type ApiError = { error?: unknown };
@@ -37,8 +38,8 @@ export function WeatherView() {
   async function searchLocations(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const search = query.trim();
-    if (search.length < 2) {
-      setError("Enter at least two characters to search for a location.");
+    if (!isSafeLabel(search, { min: 2, max: 80 })) {
+      setError("Enter 2–80 characters using letters, numbers, spaces, and basic punctuation.");
       return;
     }
     setSearching(true);

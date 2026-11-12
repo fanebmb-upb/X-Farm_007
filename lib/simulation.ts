@@ -1,4 +1,5 @@
 import { parseDailyResourceLog, recordDailyResources } from "./finance.ts";
+import { isSafeLabel } from "./validation.ts";
 import {
   HISTORY_HOURS,
   ZONE_ID,
@@ -296,8 +297,9 @@ export function savePlantProfile(state: SimulationState, draft: PlantDraft): Sim
 }
 
 export function validatePlantDraft(draft: PlantDraft, currentTime = INITIAL_TIME) {
-  if (!draft.name.trim() || draft.name.trim().length > 60) throw new Error("Enter a plant name between 1 and 60 characters.");
-  if (draft.variety.trim().length > 80) throw new Error("Variety must be 80 characters or fewer.");
+  if (!isSafeLabel(draft.name, { min: 1, max: 60 })) throw new Error("Enter a plant name of 1–60 characters using letters, numbers, spaces, and basic punctuation.");
+  if (!isSafeLabel(draft.variety, { max: 80 })) throw new Error("Enter a type of up to 80 characters using letters, numbers, spaces, and basic punctuation.");
+  if (draft.scientificName !== undefined && !isSafeLabel(draft.scientificName, { max: 150 })) throw new Error("Enter a scientific name of up to 150 characters using letters, spaces, and basic punctuation.");
   const planted = Date.parse(`${draft.plantingDate}T00:00:00.000Z`);
   if (!Number.isFinite(planted) || planted > Date.parse(currentTime)) throw new Error("Planting date must be a valid date no later than the simulation date.");
   if (!Number.isFinite(draft.irrigationIntervalHours) || draft.irrigationIntervalHours < 1 || draft.irrigationIntervalHours > 168) throw new Error("Irrigation interval must be between 1 and 168 hours.");
@@ -402,8 +404,8 @@ function isRange(value: unknown): value is Range {
 }
 
 export function isPersistablePlant(value: unknown): value is Plant {
-  if (!isRecord(value) || typeof value.id !== "string" || value.id.length < 1 || value.id.length > 100 || typeof value.name !== "string" || value.name.length < 1 || value.name.length > 60 || typeof value.speciesId !== "string" || !(value.speciesId in speciesProfiles)) return false;
-  if (typeof value.scientificName !== "string" || value.scientificName.length > 150 || typeof value.variety !== "string" || value.variety.length > 100 || typeof value.stage !== "string" || !["Seedling", "Vegetative", "Flowering", "Fruiting", "Harvest"].includes(value.stage) || typeof value.plantingDate !== "string" || !Number.isFinite(Date.parse(value.plantingDate))) return false;
+  if (!isRecord(value) || typeof value.id !== "string" || value.id.length < 1 || value.id.length > 100 || typeof value.name !== "string" || !isSafeLabel(value.name, { min: 1, max: 60 }) || typeof value.speciesId !== "string" || !(value.speciesId in speciesProfiles)) return false;
+  if (typeof value.scientificName !== "string" || !isSafeLabel(value.scientificName, { max: 150 }) || typeof value.variety !== "string" || !isSafeLabel(value.variety, { max: 100 }) || typeof value.stage !== "string" || !["Seedling", "Vegetative", "Flowering", "Fruiting", "Harvest"].includes(value.stage) || typeof value.plantingDate !== "string" || !Number.isFinite(Date.parse(value.plantingDate))) return false;
   if (typeof value.growthProgress !== "number" || !Number.isFinite(value.growthProgress) || value.growthProgress < 0 || value.growthProgress > 100) return false;
   if (typeof value.irrigationIntervalHours !== "number" || !Number.isFinite(value.irrigationIntervalHours) || !isTimestamp(value.lastWateredAt)) return false;
   if (!isRecord(value.targetConditions)) return false;
