@@ -53,7 +53,7 @@ export function PlantCareView({ plants, readings, currentTime }: { plants: Plant
     <div className="care-focus">
       <h3>Focus at the {plant.stage.toLowerCase()} stage</h3>
       <p>{guide.stageSummary}</p>
-      <p>{guide.speciesTip}</p>
+      <p>{guide.speciesTip.en}</p>
     </div>
 
     <h3 className="care-subheading">Indicators to watch</h3>
@@ -63,7 +63,7 @@ export function PlantCareView({ plants, readings, currentTime }: { plants: Plant
     <p className="care-note">Sensors can’t see everything, so check the plant itself too. These are possible causes, not a diagnosis.</p>
     <div className="finance-table-wrap"><table className="finance-table care-table">
       <thead><tr><th scope="col">What you see</th><th scope="col">Possible cause</th><th scope="col">What to do</th></tr></thead>
-      <tbody>{guide.symptoms.map((symptom) => <tr key={symptom.sign}><th scope="row">{symptom.sign}</th><td>{symptom.cause}</td><td>{symptom.action}</td></tr>)}</tbody>
+      <tbody>{guide.symptoms.map((symptom) => <tr key={symptom.sign.en}><th scope="row">{symptom.sign.en}</th><td>{symptom.cause.en}</td><td>{symptom.action.en}</td></tr>)}</tbody>
     </table></div>
 
     <p className="care-note care-footnote">Values come from simulated sensors shared across this growing zone. Guidance is general horticultural information, so confirm it against local advice for your variety and growing medium before relying on it.</p>

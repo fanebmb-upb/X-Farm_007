@@ -1,3 +1,4 @@
+import { cropCatalog, cropIds } from "./crops.ts";
 import type { DailyResourceLog, Plant, PlantSpeciesId } from "./mock-data";
 
 export const financeCurrencies = ["RON", "EUR", "USD"] as const;
@@ -41,12 +42,7 @@ export const defaultFinanceSettings: FinanceSettings = {
   energyPricePerKwh: 1.3,
   waterPricePerLiter: 0.012,
   otherCostsPerMonth: 0,
-  species: {
-    tomato: { yieldKgPerCycle: 5, cycleDays: 120, pricePerKg: 12 },
-    basil: { yieldKgPerCycle: 0.5, cycleDays: 60, pricePerKg: 40 },
-    pepper: { yieldKgPerCycle: 3, cycleDays: 120, pricePerKg: 15 },
-    custom: { yieldKgPerCycle: 1, cycleDays: 90, pricePerKg: 10 },
-  },
+  species: Object.fromEntries(cropIds.map((id) => [id, { ...cropCatalog[id].economics }])) as Record<PlantSpeciesId, SpeciesEconomics>,
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {

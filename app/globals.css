@@ -739,3 +739,5 @@ h1 { font-size: 29px; font-weight: 710; letter-spacing: -.9px; line-height: 1.2;
 
 .theme-toggle { display: inline-flex; width: 34px; height: 34px; flex: 0 0 34px; align-items: center; justify-content: center; border: 1px solid var(--line-strong); border-radius: 4px; background: var(--surface); color: var(--ink-soft); }
 .theme-toggle:hover { background: var(--surface-soft); color: var(--accent-text); }
+
+.alert-icon-critical { background: var(--danger-bg); color: var(--danger-text); }

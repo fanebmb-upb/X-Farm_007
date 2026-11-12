@@ -1,8 +1,8 @@
-import type { GrowthStage, Plant, PlantSpeciesId, PlantTargetMetric, Range, SensorMetricId, SensorReading } from "./mock-data";
+import { cropCatalog, type CropSymptom, type Localized } from "./crops.ts";
+import type { GrowthStage, Plant, PlantTargetMetric, Range, SensorMetricId, SensorReading } from "./mock-data";
 
 export type CareMetric = PlantTargetMetric | Extract<SensorMetricId, "soil-temperature" | "soil-ph" | "soil-ec">;
 export type CareStatus = "ok" | "low" | "high" | "lights-off" | "no-reading";
-type TypicalMetric = Exclude<CareMetric, PlantTargetMetric>;
 
 export type CareIndicator = {
   metric: CareMetric;
@@ -20,13 +20,13 @@ export type CareIndicator = {
 };
 
 export type WateringStatus = { hoursSince: number; intervalHours: number; hoursUntilDue: number; overdue: boolean };
-export type CareSymptom = { sign: string; cause: string; action: string };
+export type CareSymptom = CropSymptom;
 
 export type PlantCareGuide = {
   indicators: CareIndicator[];
   watering: WateringStatus;
   stageSummary: string;
-  speciesTip: string;
+  speciesTip: Localized;
   symptoms: CareSymptom[];
   outOfRangeCount: number;
 };
@@ -92,13 +92,6 @@ const metricGuides: Record<CareMetric, Pick<CareIndicator, "title" | "unit" | "w
   },
 };
 
-const typicalRanges: Record<PlantSpeciesId, Record<TypicalMetric, Range>> = {
-  tomato: { "soil-temperature": { min: 18, max: 26 }, "soil-ph": { min: 6, max: 6.8 }, "soil-ec": { min: 1, max: 3 } },
-  basil: { "soil-temperature": { min: 18, max: 26 }, "soil-ph": { min: 6, max: 7 }, "soil-ec": { min: 0.8, max: 2 } },
-  pepper: { "soil-temperature": { min: 18, max: 27 }, "soil-ph": { min: 6, max: 6.8 }, "soil-ec": { min: 1, max: 2.5 } },
-  custom: { "soil-temperature": { min: 16, max: 27 }, "soil-ph": { min: 5.5, max: 7 }, "soil-ec": { min: 0.5, max: 3 } },
-};
-
 const stageGuides: Record<GrowthStage, { summary: string; priorities: CareMetric[] }> = {
   Seedling: { summary: "Young roots dry out quickly and seedlings stretch in poor light, so keep the soil evenly moist and the light steady. Feed only lightly.", priorities: ["soil-moisture", "light", "soil-temperature"] },
   Vegetative: { summary: "The plant is building leaves and roots. Good light and steady feeding now set up the later harvest.", priorities: ["light", "soil-ec", "soil-moisture"] },
@@ -107,40 +100,6 @@ const stageGuides: Record<GrowthStage, { summary: string; priorities: CareMetric
   Harvest: { summary: "Keep conditions stable and pick regularly. Watch for disease on older foliage, and avoid overwatering near the end of the crop.", priorities: ["soil-moisture", "humidity", "light"] },
 };
 
-const speciesGuides: Record<PlantSpeciesId, { tip: string; symptoms: CareSymptom[] }> = {
-  tomato: {
-    tip: "Tomatoes respond badly to uneven watering. Consistency matters as much as the amount of water.",
-    symptoms: [
-      { sign: "Dark, sunken patch at the bottom of the fruit", cause: "Blossom end rot, usually linked to uneven watering limiting calcium uptake", action: "Keep soil moisture steady and check that pH is in range." },
-      { sign: "Flowers dropping without setting fruit", cause: "Often temperatures that are too hot or too cold", action: "Check air temperature and improve ventilation during hot hours." },
-      { sign: "Lower leaves turning yellow", cause: "Possible nitrogen shortage, though ageing leaves also yellow naturally", action: "Check EC and feed lightly if it is low." },
-    ],
-  },
-  basil: {
-    tip: "Basil dislikes cold and damp. Pinch off flower buds and harvest from the top to keep it leafy.",
-    symptoms: [
-      { sign: "Yellowing leaves with grey-purple fuzz underneath", cause: "Possibly downy mildew, which is favoured by damp air and wet leaves", action: "Lower humidity, improve airflow, avoid wetting leaves, and remove affected growth." },
-      { sign: "Tall, thin stems with few leaves", cause: "Too little light", action: "Increase light and pinch back the tips to encourage bushier growth." },
-      { sign: "Dark or black patches after a cool night", cause: "Possible cold damage", action: "Keep the plant warmer, especially overnight." },
-    ],
-  },
-  pepper: {
-    tip: "Peppers like warmth and grow slowly when cold. Stable warm temperatures help them keep their flowers.",
-    symptoms: [
-      { sign: "Flowers or small fruit dropping", cause: "Often heat, cold, or water stress", action: "Check air temperature and soil moisture, and keep both steady." },
-      { sign: "Pale, papery patches on fruit", cause: "Possible sunscald from intense direct light", action: "Add light shade and keep enough leaf cover over the fruit." },
-      { sign: "Dark, sunken patch at the end of the fruit", cause: "Blossom end rot, usually linked to uneven watering", action: "Keep soil moisture steady." },
-    ],
-  },
-  custom: {
-    tip: "These are general starting values. Look up your species' needs and adjust the targets in its plant profile.",
-    symptoms: [
-      { sign: "Wilting while the soil is wet", cause: "Possible root stress from overwatering or poor drainage", action: "Let the soil dry slightly and check drainage." },
-      { sign: "Tall, pale, stretched growth", cause: "Too little light", action: "Increase light intensity or the length of the lit period." },
-      { sign: "Brown, crispy leaf edges", cause: "Possible dry air, underwatering, or too much fertiliser", action: "Check humidity, soil moisture, and EC." },
-    ],
-  },
-};
 
 const metricOrder: CareMetric[] = ["soil-moisture", "air-temperature", "humidity", "light", "soil-temperature", "soil-ph", "soil-ec"];
 
@@ -158,10 +117,10 @@ function careStatus(metric: CareMetric, value: number | null, range: Range): Car
 /** Shared sensors measure the whole growing zone, so each plant compares the same readings with its own targets. */
 export function buildPlantCareGuide(plant: Plant, readings: SensorReading[], currentTime: string): PlantCareGuide {
   const stage = stageGuides[plant.stage];
-  const species = speciesGuides[plant.speciesId];
+  const species = cropCatalog[plant.speciesId];
   const indicators = metricOrder.map((metric): CareIndicator => {
     const isProfileMetric = metric in plant.targetConditions;
-    const range = isProfileMetric ? plant.targetConditions[metric as PlantTargetMetric] : typicalRanges[plant.speciesId][metric as TypicalMetric];
+    const range = isProfileMetric ? plant.targetConditions[metric as PlantTargetMetric] : (metric === "soil-temperature" ? species.soilTemperature : metric === "soil-ph" ? species.soilPh : species.soilEc);
     const value = readings.find((reading) => reading.metric === metric)?.value ?? null;
     return { ...metricGuides[metric], metric, value, range, rangeSource: isProfileMetric ? "profile" : "typical", status: careStatus(metric, value, range), priority: stage.priorities.includes(metric) };
   });

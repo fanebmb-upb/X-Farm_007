@@ -71,7 +71,7 @@ test("irrigation restores soil moisture, reduces the reservoir, updates plant wa
   assert.equal(irrigated.events[0].kind, "water");
   assert.equal(irrigated.events[0].time, state.currentTime);
   assert.equal(irrigated.history["virtual-soil-moisture-01"].at(-1)?.value, 51);
-  assert.deepEqual(getAlerts(irrigated), []);
+  assert.deepEqual(getAlerts(irrigated).filter((alert) => alert.params?.metric === "soil-moisture" && alert.tone !== "info"), []);
 });
 
 test("species have distinct editable targets and conditions drive plant health and alerts", () => {
@@ -79,7 +79,7 @@ test("species have distinct editable targets and conditions drive plant health a
   assert.notDeepEqual(speciesProfiles.tomato.targets, speciesProfiles.basil.targets);
   assert.equal(getPlantHealth(state.plants[0], state.readings), "Needs attention");
   assert.equal(getPlantHealth(state.plants[1], state.readings), "Healthy");
-  assert.ok(getAlerts(state).some((alert) => alert.id === "tomato-01-soil-low"));
+  assert.ok(getAlerts(state).some((alert) => alert.id === "tomato-01-soil-moisture-low"));
 });
 
 test("plant profile creation validates inputs and generates a plant growth sensor", () => {
@@ -181,10 +181,10 @@ test("integrated growing workflow creates a plant, simulates an alert, irrigates
   rules.irrigation.enabled = false;
   state = updateAutomationRules(state, rules);
   state = advanceSimulation(state);
-  assert.ok(getAlerts(state).some((alert) => alert.id === "tomato-01-soil-low"), "dry conditions produce the expected simulated alert");
+  assert.ok(getAlerts(state).some((alert) => alert.id === "tomato-01-soil-moisture-low"), "dry conditions produce the expected simulated alert");
 
   state = irrigateSimulation(state);
-  assert.deepEqual(getAlerts(state), [], "irrigation returns the shared soil reading to plant target ranges");
+  assert.deepEqual(getAlerts(state).filter((alert) => alert.params?.metric === "soil-moisture" && alert.tone !== "info"), [], "irrigation returns the shared soil reading to plant target ranges");
   assert.equal(state.history["virtual-soil-moisture-01"].at(-1)?.value, 51);
   assert.equal(state.events[0].event, "Manual virtual irrigation");
   assert.match(state.events[0].detail, /4 plants/);

@@ -14,7 +14,7 @@ function isPersistableAlert(value: unknown): value is FarmAlert {
     && (value.plantId === null || (typeof value.plantId === "string" && value.plantId.length <= 100))
     && typeof value.title === "string" && value.title.length > 0 && value.title.length <= 160
     && typeof value.detail === "string" && value.detail.length <= 500
-    && (value.tone === "info" || value.tone === "warning");
+    && (value.tone === "info" || value.tone === "warning" || value.tone === "critical");
 }
 
 function automationRulesFromRows(rows: Array<{ rule_type: string; enabled: boolean; threshold: number }>) {
@@ -119,9 +119,11 @@ export async function GET() {
     const plantIds = new Map(plantResult.data.map((plant) => [plant.id, plant.local_id]));
     const localPlants: Plant[] = plantResult.data.map((row) => {
       const speciesId = row.species in speciesProfiles ? row.species as Plant["speciesId"] : "custom";
-      const targetConditions = isPlantTargets(row.preferred_conditions) ? row.preferred_conditions : structuredClone(speciesProfiles[speciesId].targets);
+      const savedConditions = isPlantTargets(row.preferred_conditions) ? row.preferred_conditions as PlantTargets & { irrigationMode?: unknown } : null;
+      const irrigationMode: Plant["irrigationMode"] = savedConditions?.irrigationMode === "manual" ? "manual" : "auto";
+      const targetConditions: PlantTargets = savedConditions ? { "soil-moisture": savedConditions["soil-moisture"], "air-temperature": savedConditions["air-temperature"], humidity: savedConditions.humidity, light: savedConditions.light } : structuredClone(speciesProfiles[speciesId].targets);
       const stage = ["Seedling", "Vegetative", "Flowering", "Fruiting", "Harvest"].find((item) => item.toLowerCase() === row.growth_stage) ?? "Seedling";
-      return { id: row.local_id, name: row.name, speciesId, scientificName: row.scientific_name || speciesProfiles[speciesId].scientificName, variety: row.variety, plantingDate: row.planted_on ?? new Date().toISOString().slice(0, 10), stage: stage as Plant["stage"], growthProgress: Number(row.growth_progress), irrigationIntervalHours: row.irrigation_interval_hours, targetConditions, lastWateredAt: row.last_watered_at };
+      return { id: row.local_id, name: row.name, speciesId, irrigationMode, scientificName: row.scientific_name || speciesProfiles[speciesId].scientificName, variety: row.variety, plantingDate: row.planted_on ?? new Date().toISOString().slice(0, 10), stage: stage as Plant["stage"], growthProgress: Number(row.growth_progress), irrigationIntervalHours: row.irrigation_interval_hours, targetConditions, lastWateredAt: row.last_watered_at };
     });
     const validMetrics = new Set<string>([...sensorDefinitions.map((sensor) => sensor.metric), "growth-progress"]);
     const histories = await Promise.all(sensorResult.data.map(async (sensor) => {
@@ -225,7 +227,8 @@ export async function POST(request: NextRequest) {
       growth_progress: plant.growthProgress,
       irrigation_interval_hours: plant.irrigationIntervalHours,
       last_watered_at: plant.lastWateredAt,
-      preferred_conditions: plant.targetConditions as unknown as Json,
+      // The watering mode travels with the preferred conditions so no schema change is needed.
+      preferred_conditions: { ...plant.targetConditions, irrigationMode: plant.irrigationMode ?? "auto" } as unknown as Json,
       updated_at: new Date().toISOString(),
     }));
     const savedPlants = plantRows.length ? await supabase.from("plants").upsert(plantRows, { onConflict: "zone_id,local_id" }).select("id,local_id") : { data: [], error: null };

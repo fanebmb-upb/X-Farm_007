@@ -1,5 +1,7 @@
 export type PlantHealth = "Healthy" | "Needs attention";
-export type PlantSpeciesId = "tomato" | "basil" | "pepper" | "custom";
+import { cropCatalog, cropIds, type PlantSpeciesId } from "./crops.ts";
+
+export type { PlantSpeciesId } from "./crops.ts";
 export type GrowthStage = "Seedling" | "Vegetative" | "Flowering" | "Fruiting" | "Harvest";
 export type Range = { min: number; max: number };
 export type PlantTargetMetric = "soil-moisture" | "air-temperature" | "humidity" | "light";
@@ -15,6 +17,8 @@ export type Plant = {
   plantingDate: string;
   stage: GrowthStage;
   growthProgress: number;
+  /** "auto" (or missing in older saves) means X_Farm estimates the interval; "manual" uses irrigationIntervalHours. */
+  irrigationMode?: "auto" | "manual";
   irrigationIntervalHours: number;
   targetConditions: PlantTargets;
   lastWateredAt: string;
@@ -81,7 +85,9 @@ export type FarmAlert = {
   plantId: string | null;
   title: string;
   detail: string;
-  tone: "warning" | "info";
+  tone: "critical" | "warning" | "info";
+  code?: "out-of-range" | "drifting" | "survival-limit" | "reservoir-low";
+  params?: { plant?: string; metric?: "soil-moisture" | "air-temperature" | "humidity" | "light" | "soil-temperature" | "soil-ph" | "soil-ec"; value?: number; min?: number; max?: number; direction?: "low" | "high"; hours?: number };
 };
 
 export type DailyResourceLog = Record<string, { hours: number; waterLiters: number; energyKwh: number }>;
@@ -136,36 +142,17 @@ export const sensorDefinitions: SensorDefinition[] = [
   { metric: "reservoir", sensorId: "virtual-reservoir-01", name: "Water Reservoir", unit: "%", targetRange: { min: 20, max: 100 } },
 ];
 
-export const speciesProfiles: Record<PlantSpeciesId, { name: string; scientificName: string; defaultVariety: string; irrigationIntervalHours: number; targets: PlantTargets }> = {
-  tomato: {
-    name: "Tomato",
-    scientificName: "Solanum lycopersicum",
-    defaultVariety: "Roma",
-    irrigationIntervalHours: 24,
-    targets: { "soil-moisture": { min: 42, max: 68 }, "air-temperature": { min: 18, max: 28 }, humidity: { min: 50, max: 75 }, light: { min: 400, max: 800 } },
-  },
-  basil: {
-    name: "Basil",
-    scientificName: "Ocimum basilicum",
-    defaultVariety: "Genovese",
-    irrigationIntervalHours: 36,
-    targets: { "soil-moisture": { min: 30, max: 60 }, "air-temperature": { min: 20, max: 28 }, humidity: { min: 40, max: 70 }, light: { min: 300, max: 650 } },
-  },
-  pepper: {
-    name: "Pepper",
-    scientificName: "Capsicum annuum",
-    defaultVariety: "Bell pepper",
-    irrigationIntervalHours: 30,
-    targets: { "soil-moisture": { min: 35, max: 65 }, "air-temperature": { min: 20, max: 30 }, humidity: { min: 45, max: 70 }, light: { min: 350, max: 750 } },
-  },
-  custom: {
-    name: "Custom plant",
-    scientificName: "Species not specified",
-    defaultVariety: "",
-    irrigationIntervalHours: 24,
-    targets: { "soil-moisture": { min: 35, max: 65 }, "air-temperature": { min: 18, max: 28 }, humidity: { min: 40, max: 70 }, light: { min: 250, max: 700 } },
-  },
-};
+/** Plant defaults derived from the crop knowledge base in lib/crops.ts. */
+export const speciesProfiles = Object.fromEntries(cropIds.map((id) => {
+  const crop = cropCatalog[id];
+  return [id, {
+    name: crop.name.en,
+    scientificName: crop.scientificName,
+    defaultVariety: crop.typeExample.en,
+    irrigationIntervalHours: crop.irrigationBaseHours,
+    targets: { "soil-moisture": crop.soilMoisture, "air-temperature": crop.airTemperature, humidity: crop.humidity, light: crop.light } as PlantTargets,
+  }];
+})) as Record<PlantSpeciesId, { name: string; scientificName: string; defaultVariety: string; irrigationIntervalHours: number; targets: PlantTargets }>;
 
 export const initialPlants: Plant[] = [
   { id: "tomato-01", name: "Tomato", speciesId: "tomato", scientificName: "Solanum lycopersicum", variety: "Roma", plantingDate: "2026-08-12", stage: "Flowering", growthProgress: 67, irrigationIntervalHours: 24, targetConditions: speciesProfiles.tomato.targets, lastWateredAt: "2026-10-29T12:00:00.000Z" },

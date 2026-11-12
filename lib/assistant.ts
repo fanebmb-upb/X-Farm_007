@@ -18,7 +18,7 @@ export type AssistantContext = {
   finance?: AssistantFinance;
   plants: Array<{ name: string; species: string; stage: string; growthProgress: number }>;
   readings: Array<{ name: string; value: number; unit: string; targetMin: number; targetMax: number; status: "normal" | "watch" }>;
-  alerts: Array<{ title: string; detail: string; tone: "warning" | "info" }>;
+  alerts: Array<{ title: string; detail: string; tone: "critical" | "warning" | "info" }>;
   events: Array<{ time: string; event: string; detail: string }>;
 };
 
@@ -79,7 +79,7 @@ function parseContext(value: unknown): AssistantContext | null {
     if (!isRecord(item)) return null;
     const title = cleanText(item.title, 100);
     const detail = cleanText(item.detail, 240);
-    if (!title || !detail || (item.tone !== "warning" && item.tone !== "info")) return null;
+    if (!title || !detail || (item.tone !== "critical" && item.tone !== "warning" && item.tone !== "info")) return null;
     return { title, detail, tone: item.tone };
   });
   const events = value.events.map((item) => {

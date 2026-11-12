@@ -233,7 +233,7 @@ function ReadingItem({ reading }: { reading: SensorReading }) {
 }
 
 function AlertRow({ alert }: { alert: FarmAlert }) {
-  return <div className="alert-row"><span className={`alert-icon alert-icon-${alert.tone}`}><Icon name={alert.tone === "warning" ? "alert" : "chart"} size={16} /></span><div className="alert-copy"><b>{alert.title}</b><span>{alert.detail} · simulated</span></div><Icon name="chevron" size={17} className="row-chevron" /></div>;
+  return <div className="alert-row"><span className={`alert-icon alert-icon-${alert.tone}`}><Icon name={alert.tone === "info" ? "chart" : "alert"} size={16} /></span><div className="alert-copy"><b>{alert.title}</b><span>{alert.detail} · simulated</span></div><Icon name="chevron" size={17} className="row-chevron" /></div>;
 }
 
 function PlantTable({ plants, onSelect }: { plants: Array<Plant & { health: string }>; onSelect: (plant: Plant) => void }) {

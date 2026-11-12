@@ -1,5 +1,8 @@
 import { parseDailyResourceLog, recordDailyResources } from "./finance.ts";
 import { isSafeLabel } from "./validation.ts";
+import { getAlerts } from "./alerts.ts";
+
+export { getAlerts };
 import {
   HISTORY_HOURS,
   ZONE_ID,
@@ -7,7 +10,6 @@ import {
   initialPlants,
   sensorDefinitions,
   speciesProfiles,
-  type FarmAlert,
   type FarmEvent,
   type AutomationRules,
   type Plant,
@@ -302,7 +304,7 @@ export function validatePlantDraft(draft: PlantDraft, currentTime = INITIAL_TIME
   if (draft.scientificName !== undefined && !isSafeLabel(draft.scientificName, { max: 150 })) throw new Error("Enter a scientific name of up to 150 characters using letters, spaces, and basic punctuation.");
   const planted = Date.parse(`${draft.plantingDate}T00:00:00.000Z`);
   if (!Number.isFinite(planted) || planted > Date.parse(currentTime)) throw new Error("Planting date must be a valid date no later than the simulation date.");
-  if (!Number.isFinite(draft.irrigationIntervalHours) || draft.irrigationIntervalHours < 1 || draft.irrigationIntervalHours > 168) throw new Error("Irrigation interval must be between 1 and 168 hours.");
+  if (draft.irrigationMode === "manual" && (!Number.isFinite(draft.irrigationIntervalHours) || draft.irrigationIntervalHours < 1 || draft.irrigationIntervalHours > 168)) throw new Error("Irrigation interval must be between 1 and 168 hours.");
   const limits: Record<PlantTargetMetric, Range> = {
     "soil-moisture": { min: 0, max: 100 },
     "air-temperature": { min: -10, max: 60 },
@@ -338,27 +340,6 @@ export function getPlantHealth(plant: Plant, readings: SensorReading[]): PlantHe
   return inRange ? "Healthy" : "Needs attention";
 }
 
-export function getAlerts(state: SimulationState): FarmAlert[] {
-  const soil = state.readings.find((reading) => reading.metric === "soil-moisture")?.value;
-  const hour = new Date(state.currentTime).getUTCHours();
-  const alerts: FarmAlert[] = [];
-  for (const plant of state.plants) {
-    const soilRange = plant.targetConditions["soil-moisture"];
-    if (soil !== undefined && soil < soilRange.min) {
-      alerts.push({ id: `${plant.id}-soil-low`, plantId: plant.id, title: `${plant.name} soil moisture is below target`, detail: `${round(soil)}% · preferred ${soilRange.min}–${soilRange.max}%`, tone: "warning" });
-    } else if (soil !== undefined && soil > soilRange.max) {
-      alerts.push({ id: `${plant.id}-soil-high`, plantId: plant.id, title: `${plant.name} soil moisture is above target`, detail: `${round(soil)}% · preferred ${soilRange.min}–${soilRange.max}%`, tone: "info" });
-    }
-    if (hour >= 7 && hour <= 18) {
-      const light = state.readings.find((reading) => reading.metric === "light")?.value;
-      const lightRange = plant.targetConditions.light;
-      if (light !== undefined && light < lightRange.min) alerts.push({ id: `${plant.id}-light-low`, plantId: plant.id, title: `${plant.name} light is below target`, detail: `${light} µmol/m²/s · preferred ${lightRange.min}–${lightRange.max}`, tone: "warning" });
-    }
-  }
-  const reservoir = state.readings.find((reading) => reading.metric === "reservoir")?.value;
-  if (reservoir !== undefined && reservoir < 25) alerts.push({ id: "reservoir-low", plantId: null, title: "Water reservoir is running low", detail: `${round(reservoir)}% remaining · simulated`, tone: "warning" });
-  return alerts;
-}
 
 export function getPeriodSamples(state: SimulationState, sensorId: string, period: keyof typeof HISTORY_PERIOD_HOURS) {
   const count = HISTORY_PERIOD_HOURS[period] + 1;
@@ -408,6 +389,7 @@ export function isPersistablePlant(value: unknown): value is Plant {
   if (typeof value.scientificName !== "string" || !isSafeLabel(value.scientificName, { max: 150 }) || typeof value.variety !== "string" || !isSafeLabel(value.variety, { max: 100 }) || typeof value.stage !== "string" || !["Seedling", "Vegetative", "Flowering", "Fruiting", "Harvest"].includes(value.stage) || typeof value.plantingDate !== "string" || !Number.isFinite(Date.parse(value.plantingDate))) return false;
   if (typeof value.growthProgress !== "number" || !Number.isFinite(value.growthProgress) || value.growthProgress < 0 || value.growthProgress > 100) return false;
   if (typeof value.irrigationIntervalHours !== "number" || !Number.isFinite(value.irrigationIntervalHours) || !isTimestamp(value.lastWateredAt)) return false;
+  if (value.irrigationMode !== undefined && value.irrigationMode !== "auto" && value.irrigationMode !== "manual") return false;
   if (!isRecord(value.targetConditions)) return false;
   const conditions = value.targetConditions;
   return plantTargetMetrics.every((metric) => isRange(conditions[metric]));
