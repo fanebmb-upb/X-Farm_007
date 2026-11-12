@@ -12,6 +12,10 @@ type Timestamped = { created_at: string; updated_at: string };
 export type Database = {
   public: {
     Tables: {
+      crop_profiles: Table<
+        { id: string; profile: Json; source: string | null; updated_at: string },
+        { id: string; profile: Json; source?: string | null; updated_at?: string }
+      >;
       profiles: Table<
         { id: string; display_name: string; created_at: string; updated_at: string },
         { id: string; display_name?: string; created_at?: string; updated_at?: string }

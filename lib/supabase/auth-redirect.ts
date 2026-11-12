@@ -12,9 +12,9 @@ export function parseEmailOtpType(value: string | null): EmailOtpType | null {
   return EMAIL_OTP_TYPES.find((type) => type === value) ?? null;
 }
 
-// Guests can use the local demo dashboard and free weather lookups; cloud sync
+// Guests can use the local demo dashboard, the crop library, and free weather lookups; cloud sync
 // and the paid AI assistant still require an account.
-const PUBLIC_PREFIXES = ["/auth/callback", "/auth/confirm", "/api/weather/"];
+const PUBLIC_PREFIXES = ["/auth/callback", "/auth/confirm", "/api/weather/", "/api/crops"];
 
 export function isPublicRoute(pathname: string) {
   return pathname === "/" || pathname === "/login" || PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix));

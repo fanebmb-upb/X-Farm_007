@@ -18,6 +18,6 @@ test("parseEmailOtpType accepts Supabase email link types only", () => {
 });
 
 test("isPublicRoute opens the demo dashboard but keeps sync and the assistant private", () => {
-  for (const path of ["/", "/login", "/auth/confirm", "/auth/callback", "/api/weather/forecast"]) assert.equal(isPublicRoute(path), true, path);
+  for (const path of ["/", "/login", "/auth/confirm", "/auth/callback", "/api/weather/forecast", "/api/crops"]) assert.equal(isPublicRoute(path), true, path);
   for (const path of ["/api/assistant", "/api/simulation/sync", "/settings", "/loginx"]) assert.equal(isPublicRoute(path), false, path);
 });
