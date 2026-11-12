@@ -1,4 +1,5 @@
 import { cropCatalog, type CropSymptom, type Localized } from "./crops.ts";
+import { effectiveIrrigationInterval } from "./irrigation.ts";
 import type { GrowthStage, Plant, PlantTargetMetric, Range, SensorMetricId, SensorReading } from "./mock-data";
 
 export type CareMetric = PlantTargetMetric | Extract<SensorMetricId, "soil-temperature" | "soil-ph" | "soil-ec">;
@@ -127,10 +128,11 @@ export function buildPlantCareGuide(plant: Plant, readings: SensorReading[], cur
   const rank = (item: CareIndicator) => (isOutOfRange(item.status) ? 0 : item.priority ? 1 : 2);
   indicators.sort((a, b) => rank(a) - rank(b));
 
+  const intervalHours = effectiveIrrigationInterval(plant, readings);
   const hoursSince = Math.max(0, Math.floor((Date.parse(currentTime) - Date.parse(plant.lastWateredAt)) / HOUR_MS));
   return {
     indicators,
-    watering: { hoursSince, intervalHours: plant.irrigationIntervalHours, hoursUntilDue: Math.max(0, plant.irrigationIntervalHours - hoursSince), overdue: hoursSince >= plant.irrigationIntervalHours },
+    watering: { hoursSince, intervalHours, hoursUntilDue: Math.max(0, intervalHours - hoursSince), overdue: hoursSince >= intervalHours },
     stageSummary: stage.summary,
     speciesTip: species.tip,
     symptoms: species.symptoms,

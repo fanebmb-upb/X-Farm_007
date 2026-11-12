@@ -5,8 +5,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { useI18n } from "@/components/i18n-provider";
 
 export function AuthControl() {
+  const { t } = useI18n();
   const [email, setEmail] = useState<string | null>(null);
   const [checking, setChecking] = useState(isSupabaseConfigured());
   const [pending, setPending] = useState(false);
@@ -37,7 +39,7 @@ export function AuthControl() {
     else setPending(false);
   }
 
-  if (!configured || (!checking && !email)) return <Link className="account-link" href="/login">Sign in</Link>;
-  if (checking) return <span className="account-status" aria-live="polite">Checking account…</span>;
-  return <div className="account-control"><span className="account-email" title={email ?? undefined}>{email}</span><Link className="account-link" href="/reset-password">Change password</Link><button className="account-link" type="button" onClick={signOut} disabled={pending}>{pending ? "Signing out…" : "Sign out"}</button></div>;
+  if (!configured || (!checking && !email)) return <Link className="account-link" href="/login">{t("Sign in")}</Link>;
+  if (checking) return <span className="account-status" aria-live="polite">{t("Checking account…")}</span>;
+  return <div className="account-control"><span className="account-email" title={email ?? undefined}>{email}</span><Link className="account-link" href="/reset-password">{t("Change password")}</Link><button className="account-link" type="button" onClick={signOut} disabled={pending}>{pending ? t("Signing out…") : t("Sign out")}</button></div>;
 }

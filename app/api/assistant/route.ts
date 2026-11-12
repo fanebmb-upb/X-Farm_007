@@ -72,7 +72,9 @@ export async function POST(request: Request) {
 
   const input = [
     ...parsed.history.map(({ role, content }) => ({ role, content })),
-    { role: "user", content: `Question: ${parsed.message}\n\nCurrent farm snapshot (all measurements and automation events below are simulated):\n${JSON.stringify(parsed.context)}` },
+    { role: "user", content: `Reply in ${parsed.locale === "ro" ? "Romanian" : "English"}.
+
+Question: ${parsed.message}\n\nCurrent farm snapshot (all measurements and automation events below are simulated):\n${JSON.stringify(parsed.context)}` },
   ];
 
   try {

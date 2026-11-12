@@ -155,15 +155,16 @@ export const speciesProfiles = Object.fromEntries(cropIds.map((id) => {
 })) as Record<PlantSpeciesId, { name: string; scientificName: string; defaultVariety: string; irrigationIntervalHours: number; targets: PlantTargets }>;
 
 export const initialPlants: Plant[] = [
-  { id: "tomato-01", name: "Tomato", speciesId: "tomato", scientificName: "Solanum lycopersicum", variety: "Roma", plantingDate: "2026-08-12", stage: "Flowering", growthProgress: 67, irrigationIntervalHours: 24, targetConditions: speciesProfiles.tomato.targets, lastWateredAt: "2026-10-29T12:00:00.000Z" },
-  { id: "basil-01", name: "Basil", speciesId: "basil", scientificName: "Ocimum basilicum", variety: "Genovese", plantingDate: "2026-09-10", stage: "Vegetative", growthProgress: 54, irrigationIntervalHours: 36, targetConditions: speciesProfiles.basil.targets, lastWateredAt: "2026-10-29T20:32:00.000Z" },
-  { id: "pepper-01", name: "Pepper", speciesId: "pepper", scientificName: "Capsicum annuum", variety: "Bell pepper", plantingDate: "2026-09-01", stage: "Vegetative", growthProgress: 58, irrigationIntervalHours: 30, targetConditions: speciesProfiles.pepper.targets, lastWateredAt: "2026-10-29T19:04:00.000Z" },
+  { id: "tomato-01", name: "Roșie", speciesId: "tomato", scientificName: "Solanum lycopersicum", variety: "Roma", plantingDate: "2026-08-12", stage: "Flowering", growthProgress: 67, irrigationIntervalHours: 24, targetConditions: speciesProfiles.tomato.targets, lastWateredAt: "2026-10-29T12:00:00.000Z" },
+  { id: "basil-01", name: "Busuioc", speciesId: "basil", scientificName: "Ocimum basilicum", variety: "Genovese", plantingDate: "2026-09-10", stage: "Vegetative", growthProgress: 54, irrigationIntervalHours: 36, targetConditions: speciesProfiles.basil.targets, lastWateredAt: "2026-10-29T20:32:00.000Z" },
+  { id: "pepper-01", name: "Ardei", speciesId: "pepper", scientificName: "Capsicum annuum", variety: "Kapia", plantingDate: "2026-09-01", stage: "Vegetative", growthProgress: 58, irrigationIntervalHours: 30, targetConditions: speciesProfiles.pepper.targets, lastWateredAt: "2026-10-29T19:04:00.000Z" },
 ];
 
 export const navigationItems = [
   { id: "dashboard", label: "Dashboard", icon: "home" },
   { id: "plants", label: "My Plants", icon: "leaf" },
   { id: "care", label: "Plant Care", icon: "clipboard" },
+  { id: "library", label: "Plant Library", icon: "sprout" },
   { id: "analytics", label: "Sensor Analytics", icon: "chart" },
   { id: "assistant", label: "AI Assistant", icon: "sparkles" },
   { id: "finance", label: "Profit & Costs", icon: "coins" },

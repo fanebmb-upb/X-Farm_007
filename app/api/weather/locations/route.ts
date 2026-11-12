@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   const url = new URL("https://geocoding-api.open-meteo.com/v1/search");
   url.searchParams.set("name", query);
   url.searchParams.set("count", "5");
-  url.searchParams.set("language", "en");
+  url.searchParams.set("language", request.nextUrl.searchParams.get("lang") === "ro" ? "ro" : "en");
   try {
     const upstream = await fetch(url, { headers: { accept: "application/json" }, next: { revalidate: 86_400 }, signal: AbortSignal.timeout(8_000) });
     if (!upstream.ok) return NextResponse.json({ error: "Location search is temporarily unavailable." }, { status: 502 });

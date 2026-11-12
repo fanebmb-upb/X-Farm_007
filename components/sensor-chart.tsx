@@ -1,14 +1,17 @@
+import { useI18n } from "@/components/i18n-provider";
+
 function makePoints(values: number[]) {
   return values.map((value, index) => `${(index / (values.length - 1)) * 700},${150 - value * 1.3}`).join(" ");
 }
 
 export function SensorChart({ values, irrigationIndex = 12 }: { values: number[]; irrigationIndex?: number }) {
+  const { t } = useI18n();
   const line = makePoints(values);
   const area = `0,150 ${line} 700,150`;
   const irrigationX = (irrigationIndex / Math.max(values.length - 1, 1)) * 700;
 
   return (
-    <div className="chart-wrap" role="img" aria-label={`Simulated soil moisture over the last 24 hours, ending at ${values[values.length - 1] ?? 0} percent${irrigationIndex >= 0 ? " with an irrigation event in the displayed period" : ""}.`}>
+    <div className="chart-wrap" role="img" aria-label={t(irrigationIndex >= 0 ? "Simulated soil moisture over the last 24 hours, ending at {value} percent with an irrigation event in the displayed period." : "Simulated soil moisture over the last 24 hours, ending at {value} percent.", { value: values[values.length - 1] ?? 0 })}>
       <svg className="chart" viewBox="0 0 700 180" preserveAspectRatio="none" aria-hidden="true">
         <defs>
           <linearGradient id="moisture-fill" x1="0" x2="0" y1="0" y2="1">
@@ -24,7 +27,7 @@ export function SensorChart({ values, irrigationIndex = 12 }: { values: number[]
       </svg>
       <div className="chart-y-labels" aria-hidden="true"><span>100%</span><span>75%</span><span>50%</span><span>25%</span><span>0%</span></div>
       <div className="chart-x-labels" aria-hidden="true"><span>00:00</span><span>04:00</span><span>08:00</span><span>12:00</span><span>16:00</span><span>20:00</span><span>24:00</span></div>
-      {irrigationIndex >= 0 && <span className="irrigation-tag" style={{ left: `${(irrigationIndex / Math.max(values.length - 1, 1)) * 100}%` }}>Irrigation</span>}
+      {irrigationIndex >= 0 && <span className="irrigation-tag" style={{ left: `${(irrigationIndex / Math.max(values.length - 1, 1)) * 100}%` }}>{t("Irrigation")}</span>}
     </div>
   );
 }

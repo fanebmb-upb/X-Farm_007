@@ -22,7 +22,7 @@ export type AssistantContext = {
   events: Array<{ time: string; event: string; detail: string }>;
 };
 
-export type AssistantRequest = { message: string; history: AssistantMessage[]; context: AssistantContext };
+export type AssistantRequest = { message: string; history: AssistantMessage[]; context: AssistantContext; locale: "ro" | "en" };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -108,7 +108,7 @@ export function parseAssistantRequest(value: unknown): AssistantRequest | null {
   });
   const context = parseContext(value.context);
   if (!context || history.some((item) => item === null)) return null;
-  return { message, history: history as AssistantMessage[], context };
+  return { message, history: history as AssistantMessage[], context, locale: value.locale === "en" ? "en" : "ro" };
 }
 
 export function getAssistantContextCharacterCount(context: AssistantContext) {

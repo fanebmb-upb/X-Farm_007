@@ -741,3 +741,38 @@ h1 { font-size: 29px; font-weight: 710; letter-spacing: -.9px; line-height: 1.2;
 .theme-toggle:hover { background: var(--surface-soft); color: var(--accent-text); }
 
 .alert-icon-critical { background: var(--danger-bg); color: var(--danger-text); }
+
+.language-toggle { font-size: 11px; font-weight: 700; letter-spacing: .02em; }
+.irrigation-fieldset { margin-top: 16px; }
+.irrigation-estimate { display: flex; flex-direction: column; gap: 3px; color: var(--body); font-size: 11px; line-height: 1.5; }
+.irrigation-estimate strong { color: var(--ink); font-size: 15px; }
+.irrigation-fieldset .rule-enabled { margin-top: 10px; }
+.irrigation-manual { max-width: 220px; margin-top: 10px; }
+.library-layout { display: grid; grid-template-columns: minmax(200px, 250px) minmax(0, 1fr); gap: 22px; margin-top: 14px; }
+.library-list { display: flex; flex-direction: column; gap: 4px; }
+.library-item { display: flex; align-items: center; gap: 10px; border: 1px solid transparent; border-radius: 5px; background: transparent; padding: 8px 10px; color: var(--body); text-align: left; }
+.library-item:hover { background: var(--surface-soft); }
+.library-item-active { border-color: var(--line); background: var(--surface); color: var(--ink); }
+.library-item > span:first-child { font-size: 20px; }
+.library-item b { display: block; font-size: 12px; font-weight: 620; }
+.library-item small { color: var(--muted); font-size: 10px; }
+.library-detail { min-width: 0; }
+.library-detail-heading { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.library-detail-heading h3 { font-size: 20px; }
+.library-detail-heading p { margin-top: 3px; color: var(--muted); font-size: 11px; }
+.library-detail h4 { margin: 22px 0 8px; font-size: 13px; }
+.library-tip { margin-top: 12px; border-radius: 6px; background: var(--accent-soft); padding: 10px 12px; color: var(--accent-text); font-size: 12px; line-height: 1.55; }
+.library-steps { display: grid; gap: 8px; margin: 0; }
+.library-steps div { display: grid; grid-template-columns: 90px minmax(0, 1fr); gap: 10px; font-size: 12px; line-height: 1.55; }
+.library-steps dt { color: var(--ink); font-weight: 620; }
+.library-steps dd { margin: 0; color: var(--body); }
+.library-table td:nth-child(3) { color: var(--muted); font-size: 10px; }
+@media (max-width: 760px) {
+  .library-layout { grid-template-columns: minmax(0, 1fr); }
+  .library-list { flex-direction: row; overflow-x: auto; padding-bottom: 4px; }
+  .library-item { flex: 0 0 auto; }
+}
+
+/* Keep auth pages within narrow screens however long the translated text is. */
+.auth-page { grid-template-columns: minmax(0, 430px); justify-content: center; }
+.auth-card { width: 100%; }

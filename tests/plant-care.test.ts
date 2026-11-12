@@ -51,8 +51,9 @@ test("problems come first, then what matters at this growth stage", () => {
   assert.equal(guide.indicators[1].priority, true);
 });
 
-test("watering status follows the plant's interval", () => {
-  assert.deepEqual(buildPlantCareGuide(plant(), [], now).watering, { hoursSince: 10, intervalHours: 24, hoursUntilDue: 14, overdue: false });
+test("watering status follows the chosen or estimated interval", () => {
+  assert.deepEqual(buildPlantCareGuide({ ...plant(), irrigationMode: "manual" }, [], now).watering, { hoursSince: 10, intervalHours: 24, hoursUntilDue: 14, overdue: false });
+  assert.equal(buildPlantCareGuide(plant(), [], now).watering.intervalHours, 22, "auto mode uses the estimate for a flowering tomato");
   const overdue = buildPlantCareGuide(plant(), [], "2026-11-02T02:00:00.000Z").watering;
   assert.equal(overdue.overdue, true);
   assert.equal(overdue.hoursUntilDue, 0);
